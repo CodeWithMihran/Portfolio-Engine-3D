@@ -1,0 +1,40 @@
+{
+  "name": "portfolio-engine-3d",
+  "version": "1.0.0",
+  "description": "A full-stack 3D portfolio project with dynamic, admin-controlled content.",
+  "homepage": "https://github.com/CodeWithMihran/Portfolio-Engine-3D#readme",
+  "bugs": {
+    "url": "https://github.com/CodeWithMihran/Portfolio-Engine-3D/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CodeWithMihran/Portfolio-Engine-3D.git"
+  },
+  "license": "ISC",
+  "author": "Md Mihran Sohail",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "dev": "nodemon app.js",
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "config": "^4.4.1",
+    "connect-flash": "^0.1.1",
+    "connect-mongo": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "debug": "^4.4.3",
+    "dotenv": "^17.4.0",
+    "ejs": "^5.0.1",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.3.3",
+    "multer": "^2.1.1",
+    "nodemon": "^3.1.14",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0"
+  }
+}
