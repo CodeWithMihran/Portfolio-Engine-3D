@@ -7,7 +7,7 @@ import {
   deleteExperience,
 } from "../controllers/experienceController.js";
 
-import authMiddleware from "../middleware/authMiddleware.js";
+import authMiddleware from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 

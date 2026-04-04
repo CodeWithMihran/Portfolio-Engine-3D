@@ -1,4 +1,4 @@
-import Certificate from "../models/certificate.js";
+import Certificate from "../models/Certificate.js";
 
 
 // 📌 GET ALL CERTIFICATES (Public)

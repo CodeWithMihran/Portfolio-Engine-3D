@@ -16,7 +16,9 @@ import certificateRoutes from "./routes/certificateRoutes.js";
 import achievementRoutes from "./routes/achievementRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
 
-// Load environment variables
+// -------------------------
+// Load Environment Variables
+// -------------------------
 dotenv.config();
 
 const app = express();
@@ -24,25 +26,22 @@ const app = express();
 // -------------------------
 // Middleware
 // -------------------------
-app.use(cors()); // Allow cross-origin requests
-app.use(express.json()); // Parse JSON bodies
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded
-app.use(cookieParser()); // Parse cookies
-app.use(morgan("dev")); // Logger
-
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(morgan("dev"));
 
 // -------------------------
-// Connect to MongoDB
+// MongoDB Connection
 // -------------------------
-const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/portfolio";
+const MONGO_URI =
+  process.env.MONGO_URI || "mongodb://127.0.0.1:27017/portfolio";
 
-mongoose.connect(MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log("✅ MongoDB connected"))
-.catch((err) => console.log("❌ MongoDB connection error:", err));
-
+mongoose
+  .connect(MONGO_URI)
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // -------------------------
 // Routes
@@ -57,28 +56,35 @@ app.use("/api/certificates", certificateRoutes);
 app.use("/api/achievements", achievementRoutes);
 app.use("/api/contact", contactRoutes);
 
-
 // -------------------------
-// Default Route
+// Health Check Route
 // -------------------------
 app.get("/", (req, res) => {
-  res.send("Portfolio API is running...");
+  res.send("🚀 Portfolio API is running...");
 });
 
+// -------------------------
+// 404 Handler
+// -------------------------
+app.use((req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
 
 // -------------------------
-// Error Handling Middleware
+// Global Error Handler
 // -------------------------
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: "Server Error", error: err.message });
+  console.error("🔥 Error:", err.message);
+  res.status(500).json({
+    message: "Server Error",
+    error: err.message,
+  });
 });
-
 
 // -------------------------
 // Start Server
 // -------------------------
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
