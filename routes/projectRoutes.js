@@ -25,7 +25,7 @@ router.get("/:id", getProjectById);
 
 
 // ➕ CREATE PROJECT (Admin Only)
-router.post("/", authMiddleware, createProject);
+router.post("/", createProject);
 
 // ✏️ UPDATE PROJECT (Admin Only)
 router.put("/:id", authMiddleware, updateProject);
