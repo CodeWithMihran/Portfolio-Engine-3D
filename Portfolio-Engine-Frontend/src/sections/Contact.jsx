@@ -59,20 +59,24 @@ const Contact = ({ profile }) => {
             building interfaces that feel intentional.
           </p>
 
-          <div className="mt-8 space-y-4">
-            <div className="rounded-2xl border border-white/10 bg-slate-950/45 p-5">
-              <p className="text-sm text-white/45">Email</p>
-              <p className="mt-2 text-lg font-semibold">
-                {profile?.email || "Add email from admin"}
-              </p>
+          {profile?.email || profile?.location ? (
+            <div className="mt-8 space-y-4">
+              {profile?.email ? (
+                <div className="rounded-2xl border border-white/10 bg-slate-950/45 p-5">
+                  <p className="text-sm text-white/45">Email</p>
+                  <p className="mt-2 text-lg font-semibold">{profile.email}</p>
+                </div>
+              ) : null}
+              {profile?.location ? (
+                <div className="rounded-2xl border border-white/10 bg-slate-950/45 p-5">
+                  <p className="text-sm text-white/45">Location</p>
+                  <p className="mt-2 text-lg font-semibold">
+                    {profile.location}
+                  </p>
+                </div>
+              ) : null}
             </div>
-            <div className="rounded-2xl border border-white/10 bg-slate-950/45 p-5">
-              <p className="text-sm text-white/45">Location</p>
-              <p className="mt-2 text-lg font-semibold">
-                {profile?.location || "Available worldwide"}
-              </p>
-            </div>
-          </div>
+          ) : null}
         </div>
 
         <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 backdrop-blur">

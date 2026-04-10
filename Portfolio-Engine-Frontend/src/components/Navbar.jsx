@@ -1,14 +1,14 @@
 import { useState } from "react";
 
-const Navbar = ({ profile }) => {
-  const [active, setActive] = useState("");
+const defaultLinks = [
+  { id: "about", title: "About" },
+  { id: "projects", title: "Projects" },
+  { id: "skills", title: "Skills" },
+  { id: "contact", title: "Contact" },
+];
 
-  const navLinks = [
-    { id: "about", title: "About" },
-    { id: "projects", title: "Projects" },
-    { id: "skills", title: "Skills" },
-    { id: "contact", title: "Contact" },
-  ];
+const Navbar = ({ profile, sections = defaultLinks }) => {
+  const [active, setActive] = useState("");
 
   return (
     <nav className="fixed left-0 top-0 z-50 w-full border-b border-white/8 bg-[#050816]/70 backdrop-blur-xl">
@@ -21,7 +21,9 @@ const Navbar = ({ profile }) => {
             M
           </div>
           <div className="text-left">
-            <p className="text-sm uppercase tracking-[0.3em] text-white/40">Portfolio</p>
+            <p className="text-sm uppercase tracking-[0.3em] text-white/40">
+              Portfolio
+            </p>
             <p className="text-lg font-semibold text-white">
               {profile?.fullName || "Mihran.dev"}
             </p>
@@ -29,7 +31,7 @@ const Navbar = ({ profile }) => {
         </button>
 
         <ul className="hidden gap-8 text-sm text-white/70 md:flex">
-          {navLinks.map((link) => (
+          {sections.map((link) => (
             <li
               key={link.id}
               className={`cursor-pointer transition hover:text-white ${

@@ -51,6 +51,19 @@ const profileSchema = new mongoose.Schema(
       website: { type: String },
     },
 
+    // 👀 Section Visibility Controls
+    sectionVisibility: {
+      hero: { type: Boolean, default: true },
+      about: { type: Boolean, default: true },
+      projects: { type: Boolean, default: true },
+      skills: { type: Boolean, default: true },
+      experience: { type: Boolean, default: true },
+      education: { type: Boolean, default: true },
+      certificates: { type: Boolean, default: true },
+      achievements: { type: Boolean, default: true },
+      contact: { type: Boolean, default: true },
+    },
+
     // 📄 Resume
     resume: {
       type: String, // PDF URL
