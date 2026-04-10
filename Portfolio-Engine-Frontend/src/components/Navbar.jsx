@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const Navbar = () => {
+const Navbar = ({ profile }) => {
   const [active, setActive] = useState("");
 
   const navLinks = [
@@ -11,20 +11,28 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="fixed top-0 w-full z-50 bg-black/40 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-        
-        {/* Logo */}
-        <h1 className="text-white text-xl font-bold cursor-pointer">
-          Mihran.dev
-        </h1>
+    <nav className="fixed left-0 top-0 z-50 w-full border-b border-white/8 bg-[#050816]/70 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
+        <button
+          className="group flex items-center gap-3"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        >
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-300 via-sky-400 to-emerald-300 text-base font-black text-slate-950 shadow-[0_0_30px_rgba(34,211,238,0.3)] transition group-hover:scale-105">
+            M
+          </div>
+          <div className="text-left">
+            <p className="text-sm uppercase tracking-[0.3em] text-white/40">Portfolio</p>
+            <p className="text-lg font-semibold text-white">
+              {profile?.fullName || "Mihran.dev"}
+            </p>
+          </div>
+        </button>
 
-        {/* Links */}
-        <ul className="flex gap-8 text-gray-300">
+        <ul className="hidden gap-8 text-sm text-white/70 md:flex">
           {navLinks.map((link) => (
             <li
               key={link.id}
-              className={`cursor-pointer hover:text-white ${
+              className={`cursor-pointer transition hover:text-white ${
                 active === link.title ? "text-white" : ""
               }`}
               onClick={() => {
@@ -38,6 +46,13 @@ const Navbar = () => {
             </li>
           ))}
         </ul>
+
+        <a
+          href="/login"
+          className="rounded-full border border-white/15 bg-white/5 px-5 py-2 text-sm font-medium text-white transition hover:bg-white/10"
+        >
+          Admin
+        </a>
       </div>
     </nav>
   );

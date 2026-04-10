@@ -1,15 +1,6 @@
 import Admin from "../models/Admin.js";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-
-
-// 🔐 Generate JWT Token
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: "7d",
-  });
-};
-
+import generateToken from "../utils/generateToken.js";
 
 
 // 📝 REGISTER ADMIN (Run once manually or via API)
