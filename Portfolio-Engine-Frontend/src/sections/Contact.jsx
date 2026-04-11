@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import API from "../services/api";
 
 const initialForm = {
@@ -27,120 +28,164 @@ const Contact = ({ profile }) => {
 
     try {
       const response = await API.post("/contact", form);
-
       setStatus({
         loading: false,
         error: "",
-        success: response.data.message || "Message sent successfully",
+        success: response.data.message || "Uplink Established: Message Received.",
       });
       setForm(initialForm);
     } catch (error) {
       setStatus({
         loading: false,
-        error: error.response?.data?.message || "Failed to send message",
+        error: error.response?.data?.message || "Signal Lost: Failed to send message.",
         success: "",
       });
     }
   };
 
-  return (
-    <section id="contact" className="scroll-mt-28 py-24">
-      <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="rounded-[2rem] border border-white/10 bg-[linear-gradient(160deg,rgba(34,211,238,0.14),rgba(255,255,255,0.05),rgba(16,185,129,0.08))] p-8">
-          <p className="text-sm uppercase tracking-[0.35em] text-cyan-200/75">
-            Contact
-          </p>
-          <h2 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">
-            Let&apos;s build a portfolio experience people actually remember.
-          </h2>
-          <p className="mt-6 max-w-xl text-base leading-8 text-white/70">
-            Whether it&apos;s a developer portfolio, a product landing
-            experience, or a dynamic admin-driven website, I care about
-            building interfaces that feel intentional.
-          </p>
+  const inputStyles = "w-full rounded-2xl border border-white/10 bg-slate-950/50 px-6 py-4 text-white outline-none transition-all focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/20 placeholder:text-white/20";
 
-          {profile?.email || profile?.location ? (
-            <div className="mt-8 space-y-4">
-              {profile?.email ? (
-                <div className="rounded-2xl border border-white/10 bg-slate-950/45 p-5">
-                  <p className="text-sm text-white/45">Email</p>
-                  <p className="mt-2 text-lg font-semibold">{profile.email}</p>
-                </div>
-              ) : null}
-              {profile?.location ? (
-                <div className="rounded-2xl border border-white/10 bg-slate-950/45 p-5">
-                  <p className="text-sm text-white/45">Location</p>
-                  <p className="mt-2 text-lg font-semibold">
-                    {profile.location}
-                  </p>
-                </div>
-              ) : null}
+  return (
+    <section id="contact" className="relative scroll-mt-32 py-24">
+      <motion.div 
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]"
+      >
+        {/* --- LEFT SIDE: THE PITCH --- */}
+        <div className="relative overflow-hidden rounded-[3rem] border border-white/10 bg-gradient-to-br from-cyan-500/10 via-slate-950/40 to-emerald-500/5 p-10 backdrop-blur-xl">
+          <div className="relative z-10">
+            <div className="flex items-center gap-4">
+              <div className="h-[1px] w-12 bg-cyan-400/50" />
+              <p className="text-[10px] font-black uppercase tracking-[0.5em] text-cyan-400">
+                Contact.Uplink
+              </p>
             </div>
-          ) : null}
+
+            <h2 className="mt-8 text-4xl font-black leading-tight tracking-tighter text-white sm:text-6xl">
+              Let&apos;s Build <span className="text-cyan-400">Something</span> Memorable.
+            </h2>
+            
+            <p className="mt-8 text-lg leading-relaxed text-white/60">
+              Whether you're looking to launch a 3D experience, a dynamic MERN application, or just want to discuss the future of the web—my inbox is open.
+            </p>
+
+            <div className="mt-12 space-y-4">
+              {profile?.email && (
+                <div className="group rounded-2xl border border-white/5 bg-white/[0.03] p-6 transition-all hover:border-cyan-400/20 hover:bg-white/[0.06]">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 group-hover:text-cyan-400 transition-colors">Direct Frequency</p>
+                  <p className="mt-2 font-mono text-lg font-semibold text-white/90 group-hover:text-white">{profile.email}</p>
+                </div>
+              )}
+              {profile?.location && (
+                <div className="group rounded-2xl border border-white/5 bg-white/[0.03] p-6 transition-all hover:border-cyan-400/20 hover:bg-white/[0.06]">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 group-hover:text-cyan-400 transition-colors">Coordinate Origin</p>
+                  <p className="mt-2 text-lg font-semibold text-white/90 group-hover:text-white">{profile.location}</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Decorative radial glow */}
+          <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-cyan-500/10 blur-[100px]" />
         </div>
 
-        <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 backdrop-blur">
-          {status.success ? (
-            <div className="mb-5 rounded-2xl bg-emerald-500/15 px-5 py-4 text-sm text-emerald-300">
-              {status.success}
-            </div>
-          ) : null}
+        {/* --- RIGHT SIDE: THE FORM --- */}
+        <div className="relative rounded-[3rem] border border-white/10 bg-slate-950/40 p-10 backdrop-blur-2xl">
+          <AnimatePresence mode="wait">
+            {status.success && (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                className="mb-8 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-6 text-center text-sm font-bold uppercase tracking-widest text-emerald-400"
+              >
+                {status.success}
+              </motion.div>
+            )}
 
-          {status.error ? (
-            <div className="mb-5 rounded-2xl bg-red-500/15 px-5 py-4 text-sm text-red-300">
-              {status.error}
-            </div>
-          ) : null}
+            {status.error && (
+              <motion.div 
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="mb-8 rounded-2xl border border-red-500/20 bg-red-500/10 p-6 text-center text-sm font-bold uppercase tracking-widest text-red-400"
+              >
+                {status.error}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="grid gap-5 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <label className="ml-1 text-[10px] font-black uppercase tracking-widest text-white/40">Identification</label>
+                <input
+                  name="name"
+                  placeholder="Your Name"
+                  value={form.name}
+                  onChange={handleChange}
+                  className={inputStyles}
+                  required
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="ml-1 text-[10px] font-black uppercase tracking-widest text-white/40">Return Frequency</label>
+                <input
+                  name="email"
+                  type="email"
+                  placeholder="Email Address"
+                  value={form.email}
+                  onChange={handleChange}
+                  className={inputStyles}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="ml-1 text-[10px] font-black uppercase tracking-widest text-white/40">Transmission Subject</label>
               <input
-                name="name"
-                placeholder="Your name"
-                value={form.name}
+                name="subject"
+                placeholder="Topic of Inquiry"
+                value={form.subject}
                 onChange={handleChange}
-                className="w-full rounded-2xl border border-white/10 bg-slate-950/50 px-5 py-4 outline-none transition focus:border-cyan-300"
+                className={inputStyles}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="ml-1 text-[10px] font-black uppercase tracking-widest text-white/40">Data Packet</label>
+              <textarea
+                name="message"
+                rows="5"
+                placeholder="Tell me about your project or vision..."
+                value={form.message}
+                onChange={handleChange}
+                className={`${inputStyles} resize-none`}
                 required
               />
-              <input
-                name="email"
-                type="email"
-                placeholder="Your email"
-                value={form.email}
-                onChange={handleChange}
-                className="w-full rounded-2xl border border-white/10 bg-slate-950/50 px-5 py-4 outline-none transition focus:border-cyan-300"
-                required
-              />
             </div>
-
-            <input
-              name="subject"
-              placeholder="Subject"
-              value={form.subject}
-              onChange={handleChange}
-              className="w-full rounded-2xl border border-white/10 bg-slate-950/50 px-5 py-4 outline-none transition focus:border-cyan-300"
-            />
-
-            <textarea
-              name="message"
-              rows="6"
-              placeholder="Tell me about your idea..."
-              value={form.message}
-              onChange={handleChange}
-              className="w-full rounded-2xl border border-white/10 bg-slate-950/50 px-5 py-4 outline-none transition focus:border-cyan-300"
-              required
-            />
 
             <button
               type="submit"
               disabled={status.loading}
-              className="w-full rounded-full bg-cyan-400 px-6 py-4 font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-70"
+              className="group relative mt-4 w-full overflow-hidden rounded-2xl bg-cyan-500 py-5 text-sm font-black uppercase tracking-[0.4em] text-slate-950 transition-all hover:bg-cyan-400 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
             >
-              {status.loading ? "Sending..." : "Send Message"}
+              <span className="relative z-10 flex items-center justify-center gap-3">
+                {status.loading ? "Transmitting..." : "Initialize Uplink"}
+                {!status.loading && (
+                  <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                )}
+              </span>
+              <div className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
             </button>
           </form>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 };
