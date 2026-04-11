@@ -1,143 +1,229 @@
-import { Float, OrbitControls, Sphere, Stars } from "@react-three/drei";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import React, { useRef, useState, useMemo } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { 
+  Float, 
+  OrbitControls, 
+  Sphere, 
+  Stars, 
+  Html, 
+  PerspectiveCamera,
+  MeshDistortMaterial,
+  Text
+} from "@react-three/drei";
+import * as THREE from "three";
+import { motion, AnimatePresence } from "framer-motion";
 
-const OrbitalShape = ({ position, color, speed, scale, geometry }) => {
-  const meshRef = useRef(null);
-
-  useFrame((state) => {
-    if (!meshRef.current) {
-      return;
-    }
-
-    meshRef.current.rotation.x = state.clock.elapsedTime * speed;
-    meshRef.current.rotation.y = state.clock.elapsedTime * (speed * 0.8);
-    meshRef.current.position.y =
-      position[1] + Math.sin(state.clock.elapsedTime * 1.5 * speed) * 0.12;
-  });
-
+// 📍 Component for Section Landmarks on the Planet
+const PlanetLandmark = ({ position, title, onClick, color }) => {
+  const [hovered, setHovered] = useState(false);
+  
   return (
-    <Float speed={2} rotationIntensity={1.2} floatIntensity={1.5}>
-      <mesh ref={meshRef} position={position} scale={scale}>
-        {geometry}
-        <meshStandardMaterial
-          color={color}
-          metalness={0.55}
-          roughness={0.08}
+    <group position={position}>
+      {/* The clickable dot/marker */}
+      <mesh 
+        onClick={onClick}
+        onPointerOver={() => setHovered(true)}
+        onPointerOut={() => setHovered(false)}
+      >
+        <sphereGeometry args={[0.08, 16, 16]} />
+        <meshStandardMaterial 
+          color={hovered ? "#fff" : color} 
+          emissive={color} 
+          emissiveIntensity={2} 
         />
       </mesh>
-    </Float>
+
+      {/* 2D Label that stays oriented to camera */}
+      <Html distanceFactor={10} zIndexRange={[100, 0]}>
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className={`cursor-pointer whitespace-nowrap rounded-full border border-white/20 bg-black/60 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur-md transition-all ${
+            hovered ? "border-cyan-400 scale-110 shadow-[0_0_15px_rgba(34,211,238,0.5)]" : ""
+          }`}
+          onClick={onClick}
+        >
+          {title}
+        </motion.div>
+      </Html>
+    </group>
   );
 };
 
-const HeroScene = () => {
+const HeroScene = ({ profile, projects, onSectionClick }) => {
+  const planetRef = useRef();
+  const { theme } = profile || {};
+
+  // Auto-rotation logic
+  useFrame((state) => {
+    if (planetRef.current) {
+      planetRef.current.rotation.y += 0.002;
+    }
+  });
+
   return (
     <>
-      <color attach="background" args={["#050816"]} />
-      <fog attach="fog" args={["#050816", 8, 20]} />
-      <ambientLight intensity={0.75} />
-      <directionalLight
-        position={[4, 5, 3]}
-        intensity={2.4}
-        color="#9be7ff"
-      />
-      <pointLight
-        position={[-4, -2, 4]}
-        intensity={30}
-        distance={12}
-        color="#7dd3fc"
-      />
-      <pointLight
-        position={[3, 2, -2]}
-        intensity={18}
-        distance={10}
-        color="#6ee7b7"
+      {/* Dynamic Background from Admin Theme */}
+      <color attach="background" args={[theme?.backgroundColor || "#050816"]} />
+      
+      <Stars 
+        radius={100} 
+        depth={50} 
+        count={5000} 
+        factor={4} 
+        saturation={0} 
+        fade 
+        speed={1} 
       />
 
-      <Stars
-        radius={90}
-        depth={50}
-        count={2500}
-        factor={3.2}
-        saturation={0}
-        fade
-        speed={0.8}
-      />
+      <ambientLight intensity={theme?.ambientLightIntensity || 0.5} />
+      <pointLight position={[10, 10, 10]} intensity={1.5} color={theme?.primaryColor} />
+      <spotLight position={[-10, 10, 10]} angle={0.15} penumbra={1} intensity={1} />
 
-      <Float speed={1.8} rotationIntensity={0.2} floatIntensity={1.1}>
-        <Sphere args={[1.3, 64, 64]} position={[0, 0, 0]}>
-          <meshStandardMaterial
-            color="#67e8f9"
-            emissive="#0f172a"
-            metalness={0.45}
-            roughness={0.12}
-            wireframe
+      {/* 🌍 THE MAIN PLANET */}
+      <group ref={planetRef}>
+        <Sphere args={[2, 64, 64]}>
+          <MeshDistortMaterial
+            color={theme?.primaryColor || "#22d3ee"}
+            speed={1.5}
+            distort={0.2}
+            radius={1}
+            metalness={0.6}
+            roughness={0.2}
           />
         </Sphere>
-      </Float>
 
-      <OrbitalShape
-        position={[-2.2, 1.1, -0.8]}
-        color="#22d3ee"
-        speed={0.55}
-        scale={0.55}
-        geometry={<icosahedronGeometry args={[1, 0]} />}
-      />
-      <OrbitalShape
-        position={[2.3, -0.9, 0.3]}
-        color="#34d399"
-        speed={0.9}
-        scale={0.72}
-        geometry={<torusKnotGeometry args={[0.58, 0.17, 180, 24]} />}
-      />
-      <OrbitalShape
-        position={[0.1, 1.8, -1.8]}
-        color="#f0abfc"
-        speed={0.7}
-        scale={0.45}
-        geometry={<octahedronGeometry args={[1, 0]} />}
-      />
+        {/* Atmosphere Glow */}
+        <Sphere args={[2.1, 64, 64]}>
+          <meshStandardMaterial 
+            color={theme?.primaryColor || "#22d3ee"} 
+            transparent 
+            opacity={0.1} 
+            side={THREE.BackSide} 
+          />
+        </Sphere>
 
-      <mesh rotation={[-1.15, 0, 0]} position={[0, -2.1, 0]}>
-        <circleGeometry args={[5.5, 64]} />
-        <meshStandardMaterial color="#0c1224" metalness={0.1} roughness={0.9} />
-      </mesh>
+        {/* 📍 Mapping Project Sections onto Planet Surface */}
+        {projects?.map((proj, idx) => {
+          // If the backend has coordinates, use them. 
+          // Otherwise, generate a deterministic spherical distribution
+          const phi = Math.acos(-1 + (2 * idx) / projects.length);
+          const theta = Math.sqrt(projects.length * Math.PI) * phi;
+          
+          const defaultPos = [
+            2 * Math.cos(theta) * Math.sin(phi),
+            2 * Math.sin(theta) * Math.sin(phi),
+            2 * Math.cos(phi)
+          ];
 
-      <OrbitControls
-        enableZoom={false}
-        enablePan={false}
-        minPolarAngle={Math.PI / 2.3}
-        maxPolarAngle={Math.PI / 1.8}
-        autoRotate
-        autoRotateSpeed={0.7}
+          const pos = proj.threeJsConfig?.position 
+            ? [proj.threeJsConfig.position.x, proj.threeJsConfig.position.y, proj.threeJsConfig.position.z]
+            : defaultPos;
+
+          return (
+            <PlanetLandmark 
+              key={proj._id}
+              position={pos}
+              title={proj.title}
+              color={theme?.primaryColor || "#22d3ee"}
+              onClick={() => onSectionClick(proj)}
+            />
+          );
+        })}
+      </group>
+
+      <OrbitControls 
+        enableZoom={false} 
+        enablePan={false} 
+        autoRotate={false}
       />
     </>
   );
 };
 
-const HeroCanvas = ({ profile }) => {
+const HeroCanvas = ({ profile, projects }) => {
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [selectedSection, setSelectedSection] = useState(null);
+
+  const handleSectionClick = (section) => {
+    setIsTransitioning(true);
+    setSelectedSection(section);
+    
+    // Simulate the "Going inside the planet" delay before navigation
+    setTimeout(() => {
+      const element = document.getElementById('projects');
+      element?.scrollIntoView({ behavior: 'smooth' });
+      setIsTransitioning(false);
+    }, 1500);
+  };
+
   return (
-    <div className="relative h-[520px] overflow-hidden rounded-[2.5rem] border border-white/10 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.18),rgba(5,8,22,0.9)_45%)] shadow-[0_30px_100px_rgba(0,0,0,0.45)]">
-      <div className="absolute left-6 top-6 z-10 max-w-xs rounded-3xl border border-white/10 bg-slate-950/45 p-5 backdrop-blur-md">
-        <p className="text-xs uppercase tracking-[0.35em] text-cyan-200/75">
-          Live Identity
-        </p>
-        <h3 className="mt-3 text-2xl font-bold text-white">
-          {profile?.fullName || "Mihran"}
-        </h3>
-        <p className="mt-2 text-sm leading-6 text-white/65">
-          A visual-first portfolio shell powered by React, Three.js, and a
-          dynamic MERN backend.
-        </p>
+    <div className="relative h-screen w-full overflow-hidden bg-slate-950">
+      {/* Overlay UI */}
+      <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between p-8">
+        <motion.div 
+          initial={{ x: -100, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          className="max-w-md space-y-4"
+        >
+          <div className="inline-block rounded-full border border-cyan-400/30 bg-cyan-500/10 px-4 py-1">
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-cyan-400">
+              System Active
+            </span>
+          </div>
+          <h1 className="text-6xl font-black tracking-tighter text-white lg:text-8xl">
+            {profile?.fullName?.split(" ")[0] || "MIHRAN"}
+            <span className="text-cyan-400">.</span>
+          </h1>
+          <p className="text-lg leading-relaxed text-white/50">
+            {profile?.tagline || "Architecting digital universes through code and geometry."}
+          </p>
+        </motion.div>
+
+        <div className="flex items-end justify-between">
+          <div className="space-y-1">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-white/20">Coordinate Origin</p>
+            <p className="font-mono text-xs text-cyan-400/60">LAT: 28.6139° N | LONG: 77.2090° E</p>
+          </div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/30">
+            Scroll to explore depth
+          </p>
+        </div>
       </div>
 
-      <div className="absolute bottom-6 left-6 z-10 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.3em] text-white/55 backdrop-blur">
-        Responsive • Interactive • Dynamic
-      </div>
+      {/* 🌌 Transition Overlay (The "Zoom In" Effect) */}
+      <AnimatePresence>
+        {isTransitioning && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-[100] flex items-center justify-center bg-white"
+            transition={{ duration: 0.8, ease: "circIn" }}
+          >
+            <motion.h2 
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1.2, opacity: 1 }}
+              className="text-4xl font-black uppercase tracking-[0.5em] text-black"
+            >
+              Entering {selectedSection?.title}
+            </motion.h2>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <Canvas camera={{ position: [0, 0.4, 6], fov: 45 }}>
-        <HeroScene />
+      {/* 3D Canvas */}
+      <Canvas shadows dpr={[1, 2]}>
+        <PerspectiveCamera makeDefault position={[0, 0, 7]} fov={40} />
+        <HeroScene 
+          profile={profile} 
+          projects={projects} 
+          onSectionClick={handleSectionClick} 
+        />
       </Canvas>
+
+      {/* Vignette & Noise for cinematic feel */}
+      <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_150px_rgba(0,0,0,0.8)]" />
     </div>
   );
 };

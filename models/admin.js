@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const adminSchema = new mongoose.Schema(
   {
+    // 👤 Basic Identification
     name: {
       type: String,
       required: true,
@@ -20,6 +21,7 @@ const adminSchema = new mongoose.Schema(
       type: String,
       required: true,
       minlength: 6,
+      // Note: Remember to hash this in your controller/middleware!
     },
 
     role: {
@@ -33,6 +35,7 @@ const adminSchema = new mongoose.Schema(
       default: "",
     },
 
+    // 🔐 Security & Session Management
     isActive: {
       type: Boolean,
       default: true,
@@ -42,6 +45,12 @@ const adminSchema = new mongoose.Schema(
       type: Date,
     },
 
+    // Used for keeping the user logged in without re-entering password
+    refreshToken: {
+      type: String,
+    },
+
+    // For password recovery workflows
     resetPasswordToken: {
       type: String,
     },
@@ -51,9 +60,12 @@ const adminSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true,
+    timestamps: true, // Automatically manages createdAt and updatedAt
   }
 );
+
+// Indexing the email for faster lookups during login
+adminSchema.index({ email: 1 });
 
 const Admin = mongoose.model("Admin", adminSchema);
 

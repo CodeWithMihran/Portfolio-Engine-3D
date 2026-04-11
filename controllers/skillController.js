@@ -12,7 +12,6 @@ export const getSkills = async (req, res) => {
 };
 
 
-
 // 📂 GET SKILLS BY CATEGORY
 export const getSkillsByCategory = async (req, res) => {
   try {
@@ -30,7 +29,6 @@ export const getSkillsByCategory = async (req, res) => {
 };
 
 
-
 // ⭐ GET FEATURED SKILLS
 export const getFeaturedSkills = async (req, res) => {
   try {
@@ -44,7 +42,6 @@ export const getFeaturedSkills = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 
 // ➕ CREATE SKILL (Admin Only)
@@ -62,14 +59,14 @@ export const createSkill = async (req, res) => {
 };
 
 
-
 // ✏️ UPDATE SKILL (Admin Only)
 export const updateSkill = async (req, res) => {
   try {
+    // We use $set to ensure nested threeJsConfig properties aren't wiped out
     const skill = await Skill.findByIdAndUpdate(
       req.params.id,
-      req.body,
-      { new: true }
+      { $set: req.body },
+      { new: true, runValidators: true }
     );
 
     if (!skill) {
@@ -86,7 +83,6 @@ export const updateSkill = async (req, res) => {
 };
 
 
-
 // 🗑️ DELETE SKILL (Admin Only)
 export const deleteSkill = async (req, res) => {
   try {
@@ -101,7 +97,6 @@ export const deleteSkill = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 
 // 🔄 TOGGLE FEATURED SKILL

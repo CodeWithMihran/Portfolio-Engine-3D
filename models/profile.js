@@ -10,7 +10,7 @@ const profileSchema = new mongoose.Schema(
     },
 
     title: {
-      type: String, // e.g. Full Stack Developer
+      type: String, // e.g. Full Stack Developer / ML Engineer
       required: true,
     },
 
@@ -20,11 +20,11 @@ const profileSchema = new mongoose.Schema(
     },
 
     about: {
-      type: String, // detailed description
+      type: String, // detailed long-form description
     },
 
     profileImage: {
-      type: String, // image URL
+      type: String, // Image URL for hero section
       default: "",
     },
 
@@ -32,6 +32,7 @@ const profileSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
+      lowercase: true,
     },
 
     phone: {
@@ -51,6 +52,29 @@ const profileSchema = new mongoose.Schema(
       website: { type: String },
     },
 
+    // 🎨 3D Theme & Scene Control (Master Controls for Three.js)
+    theme: {
+      primaryColor: { type: String, default: "#3b82f6" }, // Accent color for UI
+      backgroundColor: { type: String, default: "#000000" }, // 3D Scene background
+      accentColor: { type: String, default: "#60a5fa" }, // Color for highlights/glow
+      
+      // Lighting controls for the 3D world
+      ambientLightIntensity: { type: Number, default: 0.5 },
+      pointLightColor: { type: String, default: "#ffffff" },
+      
+      // Environment
+      skyboxUrl: { type: String }, // 360° HDR/Image for the world background
+      enablePostProcessing: { type: Boolean, default: true }, // Toggle Bloom/Blur
+    },
+
+    // 🔍 SEO & Branding
+    seo: {
+      metaTitle: { type: String },
+      metaDescription: { type: String },
+      keywords: [{ type: String }],
+      ogImage: { type: String }, // Image for social media sharing cards
+    },
+
     // 👀 Section Visibility Controls
     sectionVisibility: {
       hero: { type: Boolean, default: true },
@@ -64,20 +88,19 @@ const profileSchema = new mongoose.Schema(
       contact: { type: Boolean, default: true },
     },
 
-    // 📄 Resume
+    // 📄 Assets
     resume: {
       type: String, // PDF URL
     },
 
-    // 🧠 Additional Info (Optional but useful)
+    // 🧠 Professional Status
     availability: {
-      type: String, // e.g. "Open to work"
+      type: String, // e.g. "Available for hire"
       default: "Open to opportunities",
     },
 
-    // ⚙️ SEO / Branding
     tagline: {
-      type: String, // short catchy line
+      type: String, // Short catchy branding line
     },
   },
   {

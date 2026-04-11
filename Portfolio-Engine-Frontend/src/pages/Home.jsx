@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import HeroCanvas from "../canvas/HeroCanvas";
 import Navbar from "../components/Navbar";
 import Achievements from "../sections/Achievements";
@@ -10,21 +10,17 @@ import Experience from "../sections/Experience";
 import Projects from "../sections/Projects";
 import Skills from "../sections/Skills";
 import API from "../services/api";
+import { motion, AnimatePresence } from "framer-motion";
 
 const emptyProfile = {
-  fullName: "",
-  title: "",
+  fullName: "Mihran Sohail",
+  title: "Full Stack Developer",
   bio: "",
-  about: "",
-  email: "",
-  location: "",
-  availability: "",
-  socialLinks: {
-    github: "",
-    linkedin: "",
-    twitter: "",
-    instagram: "",
-    website: "",
+  tagline: "",
+  theme: {
+    primaryColor: "#67e8f9",
+    backgroundColor: "#050816",
+    ambientLightIntensity: 0.7,
   },
   sectionVisibility: {
     hero: true,
@@ -52,62 +48,33 @@ const Home = () => {
   useEffect(() => {
     const loadHomeData = async () => {
       try {
-        const [
-          profileRes,
-          skillsRes,
-          projectsRes,
-          experiencesRes,
-          educationsRes,
-          certificatesRes,
-          achievementsRes,
-        ] = await Promise.allSettled([
-          API.get("/profile"),
-          API.get("/skills"),
-          API.get("/projects"),
-          API.get("/experiences"),
-          API.get("/education"),
-          API.get("/certificates"),
-          API.get("/achievements"),
-        ]);
+        const endpoints = [
+          "/profile", "/skills", "/projects", "/experiences", 
+          "/education", "/certificates", "/achievements"
+        ];
+        
+        const results = await Promise.allSettled(endpoints.map(url => API.get(url)));
 
-        if (profileRes.status === "fulfilled" && profileRes.value.data) {
-          setProfile((prev) => ({
+        // Handle Profile specially to merge theme and visibility
+        if (results[0].status === "fulfilled") {
+          const data = results[0].value.data;
+          setProfile(prev => ({
             ...prev,
-            ...profileRes.value.data,
-            socialLinks: {
-              ...prev.socialLinks,
-              ...(profileRes.value.data.socialLinks || {}),
-            },
-            sectionVisibility: {
-              ...prev.sectionVisibility,
-              ...(profileRes.value.data.sectionVisibility || {}),
-            },
+            ...data,
+            theme: { ...prev.theme, ...data.theme },
+            sectionVisibility: { ...prev.sectionVisibility, ...data.sectionVisibility }
           }));
         }
 
-        if (skillsRes.status === "fulfilled") {
-          setSkills(skillsRes.value.data || []);
-        }
+        if (results[1].status === "fulfilled") setSkills(results[1].value.data || []);
+        if (results[2].status === "fulfilled") setProjects(results[2].value.data || []);
+        if (results[3].status === "fulfilled") setExperiences(results[3].value.data || []);
+        if (results[4].status === "fulfilled") setEducations(results[4].value.data || []);
+        if (results[5].status === "fulfilled") setCertificates(results[5].value.data || []);
+        if (results[6].status === "fulfilled") setAchievements(results[6].value.data || []);
 
-        if (projectsRes.status === "fulfilled") {
-          setProjects(projectsRes.value.data || []);
-        }
-
-        if (experiencesRes.status === "fulfilled") {
-          setExperiences(experiencesRes.value.data || []);
-        }
-
-        if (educationsRes.status === "fulfilled") {
-          setEducations(educationsRes.value.data || []);
-        }
-
-        if (certificatesRes.status === "fulfilled") {
-          setCertificates(certificatesRes.value.data || []);
-        }
-
-        if (achievementsRes.status === "fulfilled") {
-          setAchievements(achievementsRes.value.data || []);
-        }
+      } catch (err) {
+        console.error("Universe Loading Error:", err);
       } finally {
         setLoading(false);
       }
@@ -116,155 +83,128 @@ const Home = () => {
     loadHomeData();
   }, []);
 
-  const socialLabels = {
-    github: "GitHub",
-    linkedin: "LinkedIn",
-    twitter: "Twitter",
-    instagram: "Instagram",
-    website: "Website",
-  };
+  // 🌍 Navigation Logic based on visibility and data existence
+  const navSections = useMemo(() => {
+    const vis = profile.sectionVisibility || {};
+    return [
+      vis.about && { id: "about", title: "About" },
+      vis.projects && projects.length > 0 && { id: "projects", title: "Projects" },
+      vis.skills && skills.length > 0 && { id: "skills", title: "Skills" },
+      vis.experience && experiences.length > 0 && { id: "experience", title: "Experience" },
+      vis.education && educations.length > 0 && { id: "education", title: "Education" },
+      vis.contact && { id: "contact", title: "Contact" },
+    ].filter(Boolean);
+  }, [profile, projects, skills, experiences, educations]);
 
-  const socialLinks = Object.entries(profile.socialLinks || {})
-    .filter(([, value]) => value && value.trim())
-    .map(([key, value]) => ({
-      key,
-      label: socialLabels[key] || key,
-      value,
-    }));
-
-  const visibility = profile.sectionVisibility || {};
-  const showHero =
-    visibility.hero !== false &&
-    [profile.fullName, profile.title, profile.bio].some((value) => value?.trim());
-  const showAbout =
-    visibility.about !== false &&
-    [profile.about, profile.bio, profile.location, profile.availability].some(
-      (value) => value?.trim()
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-[#050816]">
+        <motion.div 
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+          className="h-12 w-12 rounded-full border-t-2 border-cyan-400"
+        />
+      </div>
     );
-  const showProjects = visibility.projects !== false && projects.length > 0;
-  const showSkills = visibility.skills !== false && skills.length > 0;
-  const showExperience =
-    visibility.experience !== false && experiences.length > 0;
-  const showEducation = visibility.education !== false && educations.length > 0;
-  const showCertificates =
-    visibility.certificates !== false && certificates.length > 0;
-  const showAchievements =
-    visibility.achievements !== false && achievements.length > 0;
-  const showContact = visibility.contact !== false;
-
-  const navSections = [
-    showAbout ? { id: "about", title: "About" } : null,
-    showProjects ? { id: "projects", title: "Projects" } : null,
-    showSkills ? { id: "skills", title: "Skills" } : null,
-    showExperience ? { id: "experience", title: "Experience" } : null,
-    showEducation ? { id: "education", title: "Education" } : null,
-    showCertificates ? { id: "certificates", title: "Certificates" } : null,
-    showAchievements ? { id: "achievements", title: "Achievements" } : null,
-    showContact ? { id: "contact", title: "Contact" } : null,
-  ].filter(Boolean);
+  }
 
   return (
-    <div className="min-h-screen bg-[#050816] text-white selection:bg-cyan-300 selection:text-slate-950">
-      <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute left-[-10%] top-[-8%] h-72 w-72 rounded-full bg-cyan-500/20 blur-3xl" />
-        <div className="absolute right-[-10%] top-[14%] h-96 w-96 rounded-full bg-fuchsia-500/10 blur-3xl" />
-        <div className="absolute bottom-[-10%] left-[20%] h-80 w-80 rounded-full bg-emerald-400/10 blur-3xl" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_30%),linear-gradient(180deg,rgba(255,255,255,0.03),transparent_30%)]" />
+    <div className="relative min-h-screen bg-slate-950 text-white selection:bg-cyan-400 selection:text-black">
+      
+      {/* 🌌 FULL SCREEN 3D BACKGROUND (The Planet) */}
+      <div className="fixed inset-0 z-0 h-screen w-full">
+        <HeroCanvas profile={profile} projects={projects} />
       </div>
 
       <Navbar profile={profile} sections={navSections} />
 
-      <main className="mx-auto max-w-7xl px-6 pb-20 pt-24 lg:px-8">
-        {showHero ? (
-          <section className="grid min-h-[88vh] items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
-            <div className="space-y-8">
-              <div className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-cyan-200 shadow-[0_0_30px_rgba(34,211,238,0.1)] backdrop-blur">
-                Dynamic 3D MERN portfolio
+      {/* 🚀 SCROLLABLE CONTENT LAYER */}
+      <main className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+        
+        {/* HERO SECTION - Now an overlay over the 3D scene */}
+        <section id="hero" className="flex min-h-screen flex-col justify-center pt-20">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="pointer-events-none max-w-3xl space-y-6"
+          >
+             {/* Content is handled primarily by HeroCanvas overlay, 
+                 but we can add extra "floating" detail here if needed */}
+          </motion.div>
+        </section>
+
+        {/* DATA SECTIONS - Each wrapped in a "Space Glass" container for readability */}
+        <div className="space-y-32 pb-32">
+          
+          <AnimatePresence>
+            {profile.sectionVisibility.about && (
+              <section id="about" className="scroll-mt-32 backdrop-blur-sm rounded-[3rem] border border-white/5 bg-black/20 p-8 lg:p-12">
+                <About profile={profile} />
+              </section>
+            )}
+
+            {profile.sectionVisibility.projects && projects.length > 0 && (
+              <section id="projects" className="scroll-mt-32">
+                <Projects projects={projects} loading={loading} />
+              </section>
+            )}
+
+            {profile.sectionVisibility.skills && skills.length > 0 && (
+              <section id="skills" className="scroll-mt-32">
+                <Skills skills={skills} loading={loading} />
+              </section>
+            )}
+
+            {profile.sectionVisibility.experience && experiences.length > 0 && (
+              <section id="experience" className="scroll-mt-32">
+                <Experience experiences={experiences} loading={loading} />
+              </section>
+            )}
+
+            {profile.sectionVisibility.education && educations.length > 0 && (
+              <section id="education" className="scroll-mt-32">
+                <Education educations={educations} loading={loading} />
+              </section>
+            )}
+
+            {(certificates.length > 0 || achievements.length > 0) && (
+              <div className="grid gap-12 lg:grid-cols-2">
+                 {profile.sectionVisibility.certificates && (
+                    <Certificates certificates={certificates} />
+                 )}
+                 {profile.sectionVisibility.achievements && (
+                    <Achievements achievements={achievements} />
+                 )}
               </div>
+            )}
 
-              <div className="space-y-5">
-                {profile.availability ? (
-                  <p className="text-sm uppercase tracking-[0.4em] text-white/45">
-                    {profile.availability}
-                  </p>
-                ) : null}
-                <h1 className="max-w-3xl text-5xl font-black leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
-                  {profile.fullName}
-                  {profile.title ? (
-                    <span className="mt-3 block bg-gradient-to-r from-cyan-300 via-sky-400 to-emerald-300 bg-clip-text text-transparent">
-                      {profile.title}
-                    </span>
-                  ) : null}
-                </h1>
-                {profile.bio ? (
-                  <p className="max-w-2xl text-lg leading-8 text-white/70 sm:text-xl">
-                    {profile.bio}
-                  </p>
-                ) : null}
-              </div>
-
-              <div className="flex flex-wrap gap-4">
-                {showProjects ? (
-                  <a
-                    href="#projects"
-                    className="rounded-full bg-cyan-400 px-6 py-3 font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:bg-cyan-300"
-                  >
-                    Explore projects
-                  </a>
-                ) : null}
-                {showContact ? (
-                  <a
-                    href="#contact"
-                    className="rounded-full border border-white/15 bg-white/5 px-6 py-3 font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/10"
-                  >
-                    Let&apos;s build something
-                  </a>
-                ) : null}
-              </div>
-
-              <div className="grid max-w-2xl gap-4 rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur md:grid-cols-3">
-                <div>
-                  <p className="text-3xl font-bold text-cyan-300">MERN</p>
-                  <p className="mt-2 text-sm text-white/55">
-                    Dynamic content managed through a full-stack architecture.
-                  </p>
-                </div>
-                <div>
-                  <p className="text-3xl font-bold text-emerald-300">3D</p>
-                  <p className="mt-2 text-sm text-white/55">
-                    Immersive visual storytelling built with React Three Fiber.
-                  </p>
-                </div>
-                <div>
-                  <p className="text-3xl font-bold text-fuchsia-300">Admin</p>
-                  <p className="mt-2 text-sm text-white/55">
-                    Portfolio updates without touching code every time.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <HeroCanvas profile={profile} />
-          </section>
-        ) : null}
-
-        {showAbout ? <About profile={profile} socialLinks={socialLinks} /> : null}
-        {showProjects ? <Projects projects={projects} loading={loading} /> : null}
-        {showSkills ? <Skills skills={skills} loading={loading} /> : null}
-        {showExperience ? (
-          <Experience experiences={experiences} loading={loading} />
-        ) : null}
-        {showEducation ? (
-          <Education educations={educations} loading={loading} />
-        ) : null}
-        {showCertificates ? (
-          <Certificates certificates={certificates} loading={loading} />
-        ) : null}
-        {showAchievements ? (
-          <Achievements achievements={achievements} loading={loading} />
-        ) : null}
-        {showContact ? <Contact profile={profile} /> : null}
+            {profile.sectionVisibility.contact && (
+              <section id="contact" className="scroll-mt-32 pb-20">
+                <Contact profile={profile} />
+              </section>
+            )}
+          </AnimatePresence>
+        </div>
       </main>
+
+      {/* 🎞️ CINEMATIC FOOTER */}
+      <footer className="relative z-10 border-t border-white/5 bg-black/40 py-10 backdrop-blur-md">
+        <div className="mx-auto max-w-7xl px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+          <p className="text-sm text-white/30 tracking-widest uppercase">
+            © 2026 {profile.fullName} • System Stable
+          </p>
+          <div className="flex gap-6">
+            {Object.entries(profile.socialLinks).map(([key, url]) => (
+              url && (
+                <a key={key} href={url} target="_blank" rel="noreferrer" className="text-white/40 hover:text-cyan-400 transition-colors capitalize text-xs font-bold tracking-widest">
+                  {key}
+                </a>
+              )
+            ))}
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

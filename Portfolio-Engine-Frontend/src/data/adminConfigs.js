@@ -27,6 +27,13 @@ export const initialProfileForm = {
     achievements: true,
     contact: true,
   },
+  // 🎨 NEW: 3D Scene Environment & Theme Control
+  theme: {
+    primaryColor: "#67e8f9",
+    backgroundColor: "#050816",
+    ambientLightIntensity: 0.75,
+    skyboxUrl: "",
+  },
 };
 
 export const initialForms = {
@@ -37,6 +44,13 @@ export const initialForms = {
     thumbnail: "",
     githubLink: "",
     liveLink: "",
+    featured: false,
+    // 🌐 NEW: 3D Spatial Position on Planet
+    threeJsConfig: {
+      position: { x: 0, y: 0, z: 0 },
+      rotation: { x: 0, y: 0, z: 0 },
+      scale: 1,
+    },
   },
   skills: {
     name: "",
@@ -44,6 +58,10 @@ export const initialForms = {
     proficiency: 80,
     icon: "",
     featured: false,
+    // 🌐 NEW: 3D Spatial Position in Space Cloud
+    threeJsConfig: {
+      position: { x: 0, y: 0, z: 0 },
+    },
   },
   experiences: {
     companyName: "",
@@ -119,14 +137,14 @@ export const managerConfigs = [
       { name: "title", label: "Project title", row: 0 },
       { name: "shortDescription", label: "Short description", row: 0 },
       { name: "description", label: "Description", type: "textarea", row: 1 },
-      {
-        name: "thumbnail",
-        label: "Thumbnail URL",
-        row: 2,
-        imageUpload: true,
-      },
+      { name: "thumbnail", label: "Thumbnail URL", row: 2, imageUpload: true },
       { name: "githubLink", label: "GitHub URL", row: 3 },
       { name: "liveLink", label: "Live demo URL", row: 3 },
+      { name: "featured", label: "Featured on Planet Surface", type: "checkbox", row: 4 },
+      // 📍 3D Spatial Coordinates
+      { name: "threeJsConfig.position.x", label: "Planet X Pos", type: "number", row: 5 },
+      { name: "threeJsConfig.position.y", label: "Planet Y Pos", type: "number", row: 5 },
+      { name: "threeJsConfig.position.z", label: "Planet Z Pos", type: "number", row: 5 },
     ],
     renderItem: (item) => ({
       title: item.title,
@@ -156,7 +174,11 @@ export const managerConfigs = [
       },
       { name: "proficiency", label: "Proficiency (0-100)", type: "number", row: 1 },
       { name: "icon", label: "Icon URL or label", row: 1, imageUpload: true },
-      { name: "featured", label: "Featured skill", type: "checkbox", row: 2 },
+      { name: "featured", label: "Featured in Space Cloud", type: "checkbox", row: 2 },
+      // 📍 3D Spatial Coordinates for floating icons
+      { name: "threeJsConfig.position.x", label: "Space X", type: "number", row: 3 },
+      { name: "threeJsConfig.position.y", label: "Space Y", type: "number", row: 3 },
+      { name: "threeJsConfig.position.z", label: "Space Z", type: "number", row: 3 },
     ],
     renderItem: (item) => ({
       title: item.name,
@@ -186,12 +208,7 @@ export const managerConfigs = [
       { name: "location", label: "Location", row: 1 },
       { name: "startDate", label: "Start date", type: "date", row: 2 },
       { name: "endDate", label: "End date", type: "date", row: 2 },
-      {
-        name: "currentlyWorking",
-        label: "Currently working here",
-        type: "checkbox",
-        row: 3,
-      },
+      { name: "currentlyWorking", label: "Currently working here", type: "checkbox", row: 3 },
       { name: "description", label: "Description", type: "textarea", row: 4 },
     ],
     renderItem: (item) => ({
@@ -212,12 +229,7 @@ export const managerConfigs = [
       { name: "location", label: "Location", row: 1 },
       { name: "startDate", label: "Start date", type: "date", row: 2 },
       { name: "endDate", label: "End date", type: "date", row: 2 },
-      {
-        name: "currentlyStudying",
-        label: "Currently studying here",
-        type: "checkbox",
-        row: 3,
-      },
+      { name: "currentlyStudying", label: "Currently studying here", type: "checkbox", row: 3 },
       { name: "grade", label: "Grade / CGPA", row: 4 },
       { name: "description", label: "Description", type: "textarea", row: 5 },
     ],
@@ -235,12 +247,7 @@ export const managerConfigs = [
       { name: "title", label: "Certificate title", row: 0 },
       { name: "issuer", label: "Issuer", row: 0 },
       { name: "issueDate", label: "Issue date", type: "date", row: 1 },
-      {
-        name: "certificateImage",
-        label: "Certificate image URL",
-        row: 1,
-        imageUpload: true,
-      },
+      { name: "certificateImage", label: "Image URL", row: 1, imageUpload: true },
       { name: "credentialId", label: "Credential ID", row: 1 },
       { name: "credentialURL", label: "Credential URL", row: 2 },
       { name: "description", label: "Description", type: "textarea", row: 3 },
@@ -274,7 +281,7 @@ export const managerConfigs = [
       { name: "issuer", label: "Issuer", row: 1 },
       { name: "position", label: "Position / Rank", row: 1 },
       { name: "date", label: "Date", type: "date", row: 2 },
-      { name: "image", label: "Achievement image URL", row: 2, imageUpload: true },
+      { name: "image", label: "Image URL", row: 2, imageUpload: true },
       { name: "certificateURL", label: "Proof URL", row: 2 },
       { name: "description", label: "Description", type: "textarea", row: 3 },
       { name: "featured", label: "Featured achievement", type: "checkbox", row: 4 },

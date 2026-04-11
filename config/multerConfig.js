@@ -29,15 +29,26 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage,
   fileFilter: (_req, file, cb) => {
-    if (file.mimetype.startsWith("image/")) {
-      cb(null, true);
-      return;
-    }
+    // 📂 Allowed formats for a 3D Portfolio
+    const allowedMimetypes = [
+      "image/",         // PNG, JPG, WebP
+      "video/",         // MP4, WebM (for your videoDemo textures)
+      "model/gltf-binary", // .glb files (Your 3D models)
+      "application/octet-stream" // Often used for .glb/.gltf files
+    ];
 
-    cb(new Error("Only image files are allowed"));
+    const isAllowed = allowedMimetypes.some((type) => 
+      file.mimetype.startsWith(type) || file.originalname.endsWith('.glb')
+    );
+
+    if (isAllowed) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only images, videos, and 3D models (.glb) are allowed"));
+    }
   },
   limits: {
-    fileSize: 5 * 1024 * 1024,
+    fileSize: 50 * 1024 * 1024, // ⬆️ Increased to 50MB because 3D models and videos are heavy
   },
 });
 
