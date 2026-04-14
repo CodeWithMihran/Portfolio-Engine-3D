@@ -1,5 +1,37 @@
 import Project from "../models/Project.js";
 
+const slugify = (value = "") =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+const generateUniqueSlug = async (title, excludeId = null) => {
+  const baseSlug = slugify(title);
+
+  if (!baseSlug) {
+    return "";
+  }
+
+  let slug = baseSlug;
+  let suffix = 1;
+
+  while (true) {
+    const existingProject = await Project.findOne({
+      slug,
+      ...(excludeId ? { _id: { $ne: excludeId } } : {}),
+    }).select("_id");
+
+    if (!existingProject) {
+      return slug;
+    }
+
+    slug = `${baseSlug}-${suffix}`;
+    suffix += 1;
+  }
+};
+
 // 📌 GET ALL PROJECTS (Public)
 // Added filtering by tag/category for better 3D organization
 export const getProjects = async (req, res) => {
@@ -50,9 +82,10 @@ export const getProjectById = async (req, res) => {
 // ➕ CREATE PROJECT (Admin Only)
 export const createProject = async (req, res) => {
   try {
-    // Generate slug from title if not provided
-    if (req.body.title && !req.body.slug) {
-      req.body.slug = req.body.title.toLowerCase().split(' ').join('-');
+    if (req.body.title) {
+      req.body.slug = req.body.slug
+        ? await generateUniqueSlug(req.body.slug)
+        : await generateUniqueSlug(req.body.title);
     }
 
     const project = await Project.create(req.body);
@@ -69,10 +102,17 @@ export const createProject = async (req, res) => {
 // ✏️ UPDATE PROJECT (Admin Only)
 export const updateProject = async (req, res) => {
   try {
-    // Using $set with findByIdAndUpdate to protect nested threeJsConfig data
+    const updateData = { ...req.body };
+
+    if (updateData.title && !Object.prototype.hasOwnProperty.call(updateData, "slug")) {
+      updateData.slug = await generateUniqueSlug(updateData.title, req.params.id);
+    } else if (updateData.slug) {
+      updateData.slug = await generateUniqueSlug(updateData.slug, req.params.id);
+    }
+
     const project = await Project.findByIdAndUpdate(
       req.params.id,
-      { $set: req.body },
+      { $set: updateData },
       { new: true, runValidators: true }
     );
 
