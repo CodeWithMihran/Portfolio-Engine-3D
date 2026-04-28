@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../services/api';
 import { useStore } from '../../store/useStore';
 
-function ProjectEditor({ initialData, isEdit = false, projectId }) {
+function ProjectEditor({ initialData, isEdit = false }) {
   const navigate = useNavigate();
   const fetchAllData = useStore((state) => state.fetchAllData);
   const [formData, setFormData] = useState(initialData);
@@ -11,19 +11,9 @@ function ProjectEditor({ initialData, isEdit = false, projectId }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const techArray = formData.technologies
-        .split(',')
-        .map((tech) => tech.trim())
-        .filter(Boolean);
-      const payload = { ...formData, technologies: techArray };
-
-      if (isEdit && projectId) {
-        await api.updateProject(projectId, payload);
-        window.alert('Project updated successfully.');
-      } else {
-        await api.createProject(payload);
-        window.alert('Project initialized successfully.');
-      }
+      const techArray = formData.technologies.split(',').map(t => t.trim());
+      await api.createProject({ ...formData, technologies: techArray });
+      window.alert('Project initialized successfully.');
       await fetchAllData();
       navigate('/admin/projects');
     } catch {
@@ -124,5 +114,5 @@ export default function AddProject({ isEdit = false }) {
     );
   }
 
-  return <ProjectEditor key={existingProject?._id || 'new-project'} initialData={initialData} isEdit={isEdit} projectId={id} />;
+  return <ProjectEditor key={existingProject?._id || 'new-project'} initialData={initialData} isEdit={isEdit} />;
 }

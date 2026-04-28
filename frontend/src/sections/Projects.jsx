@@ -31,24 +31,24 @@ export default function Projects() {
           <motion.div
             key={project._id}
             variants={fadeInUp}
-            className={`relative group rounded-3xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-md transition-all duration-300 hover:scale-[1.01] hover:border-slate-700 hover:bg-slate-800/50 hover:shadow-2xl hover:shadow-blue-500/10 ${
+            className={`relative group overflow-hidden rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,rgba(11,20,35,0.94),rgba(10,18,32,0.76))] p-6 shadow-[0_24px_70px_rgba(2,6,23,0.34)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-cyan-300/20 hover:shadow-[0_30px_80px_rgba(34,211,238,0.1)] ${
               index === 0 ? 'md:col-span-8' : 'md:col-span-4'
             }`}
           >
-            <div className="absolute inset-0 rounded-3xl bg-[radial-gradient(circle_at_top,rgba(168,85,247,0.16),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(56,189,248,0.12),transparent_26%)] opacity-0 transition-opacity group-hover:opacity-100" />
+            <div className="absolute inset-0 rounded-[30px] bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.16),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(251,146,60,0.12),transparent_26%)] opacity-0 transition-opacity group-hover:opacity-100" />
             <div className="relative z-10 flex h-full flex-col justify-between">
               <div>
                 <div className="mb-5 flex items-center gap-3">
-                  <span className="rounded-full border border-violet-300/20 bg-violet-400/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.24em] text-violet-100">
+                  <span className="rounded-full border border-cyan-300/20 bg-cyan-400/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.24em] text-cyan-100">
                     {project.status || 'completed'}
                   </span>
                   {project.featured ? (
-                    <span className="rounded-full border border-emerald-300/20 bg-emerald-400/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.24em] text-emerald-100">
+                    <span className="rounded-full border border-orange-300/20 bg-orange-400/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.24em] text-orange-100">
                       featured
                     </span>
                   ) : null}
                 </div>
-                <h3 className="mb-3 text-2xl font-bold transition-colors group-hover:text-blue-400">
+                <h3 className="mb-3 text-2xl font-bold transition-colors group-hover:text-cyan-200">
                   {project.title}
                 </h3>
                 <p className="mb-6 text-sm leading-relaxed text-slate-400">
@@ -58,7 +58,7 @@ export default function Projects() {
                   {(project.technologies || []).slice(0, 3).map((tech) => (
                     <span
                       key={tech}
-                      className="rounded border border-white/10 bg-white/5 px-2 py-1 text-[10px] uppercase tracking-wider"
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-slate-300"
                     >
                       {tech}
                     </span>
@@ -68,12 +68,12 @@ export default function Projects() {
 
               <div className="flex gap-4">
                 {project.githubLink && (
-                  <a href={project.githubLink} target="_blank" rel="noreferrer" className="text-slate-500 hover:text-white">
+                  <a href={project.githubLink} target="_blank" rel="noreferrer" className="text-slate-500 transition hover:text-cyan-200">
                     <Code2 size={20} />
                   </a>
                 )}
                 {project.liveLink && (
-                  <a href={project.liveLink} target="_blank" rel="noreferrer" className="text-slate-500 hover:text-white">
+                  <a href={project.liveLink} target="_blank" rel="noreferrer" className="text-slate-500 transition hover:text-orange-200">
                     <ExternalLink size={20} />
                   </a>
                 )}

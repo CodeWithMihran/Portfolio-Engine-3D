@@ -36,14 +36,15 @@ export default function About() {
       >
         {categories.map(([category, items], index) => {
           const Icon = SERVICE_ICONS[index % SERVICE_ICONS.length];
+
           return (
             <motion.div
               key={category}
               variants={fadeInUp}
               className="group rounded-[28px] border border-white/10 bg-slate-900/55 p-[1px] shadow-[0_24px_60px_rgba(2,6,23,0.45)]"
             >
-              <div className="flex h-full flex-col rounded-[27px] border border-white/5 bg-[radial-gradient(circle_at_top,rgba(139,92,246,0.18),transparent_30%),linear-gradient(180deg,rgba(15,23,42,0.95),rgba(15,23,42,0.72))] p-7 transition duration-300 group-hover:-translate-y-1">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-violet-400/20 bg-violet-500/10 text-violet-200">
+              <div className="flex h-full flex-col rounded-[27px] border border-white/5 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.16),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(251,146,60,0.08),transparent_24%),linear-gradient(180deg,rgba(13,22,38,0.96),rgba(9,17,31,0.82))] p-7 transition duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_22px_50px_rgba(34,211,238,0.08)]">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-cyan-300/20 bg-cyan-400/10 text-cyan-100">
                   <Icon size={24} />
                 </div>
                 <h3 className="mt-6 text-xl font-bold capitalize text-white">{category}</h3>
@@ -54,7 +55,7 @@ export default function About() {
                   {items.slice(0, 4).map((item) => (
                     <span
                       key={item._id}
-                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.2em] text-slate-300"
+                      className="rounded-full border border-cyan-300/10 bg-white/5 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.2em] text-slate-300"
                     >
                       {item.name}
                     </span>

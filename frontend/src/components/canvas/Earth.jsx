@@ -1,71 +1,37 @@
-import { Suspense, useRef } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Preload } from '@react-three/drei';
+import { Suspense, useMemo } from 'react';
 import * as THREE from 'three';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, Preload, useGLTF } from '@react-three/drei';
 import CanvasLoader from './Loader';
 
-function PlanetCore() {
-  const planetRef = useRef(null);
-  const ringRef = useRef(null);
+function EarthModel() {
+  const earth = useGLTF('/planet/scene.gltf');
+  const scene = useMemo(() => {
+    const cloned = earth.scene.clone(true);
 
-  useFrame((state, delta) => {
-    if (planetRef.current) {
-      planetRef.current.rotation.y += delta * 0.22;
-      planetRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.18) * 0.08;
-    }
+    cloned.traverse((child) => {
+      if (!child.isMesh || !child.material) {
+        return;
+      }
 
-    if (ringRef.current) {
-      ringRef.current.rotation.z += delta * 0.08;
-      ringRef.current.rotation.x = Math.PI * 0.38;
-    }
-  });
+      const material = child.material.clone();
+      const name = child.material.name || child.name || '';
 
-  return (
-    <group>
-      <mesh ref={planetRef} castShadow receiveShadow>
-        <sphereGeometry args={[2.45, 128, 128]} />
-        <meshStandardMaterial
-          color="#6ee7ff"
-          emissive="#0f4c81"
-          emissiveIntensity={0.7}
-          roughness={0.7}
-          metalness={0.15}
-        />
-      </mesh>
+      if (name.includes('Clouds')) {
+        material.color = new THREE.Color('#7dd3fc');
+      }
 
-      <mesh scale={1.018}>
-        <sphereGeometry args={[2.45, 128, 128]} />
-        <meshStandardMaterial
-          color="#d8fbff"
-          transparent
-          opacity={0.08}
-          side={THREE.DoubleSide}
-        />
-      </mesh>
+      if (name.includes('Planet')) {
+        material.color = new THREE.Color('#6ee7b7');
+      }
 
-      <mesh ref={ringRef} position={[0, -0.1, 0]}>
-        <torusGeometry args={[3.55, 0.075, 32, 240]} />
-        <meshStandardMaterial
-          color="#8b5cf6"
-          emissive="#22d3ee"
-          emissiveIntensity={0.35}
-          transparent
-          opacity={0.75}
-        />
-      </mesh>
+      child.material = material;
+    });
 
-      <mesh rotation={[Math.PI / 3.2, 0, Math.PI / 5]} scale={1.04}>
-        <torusGeometry args={[3.1, 0.03, 24, 220]} />
-        <meshStandardMaterial
-          color="#c4b5fd"
-          emissive="#60a5fa"
-          emissiveIntensity={0.28}
-          transparent
-          opacity={0.5}
-        />
-      </mesh>
-    </group>
-  );
+    return cloned;
+  }, [earth.scene]);
+
+  return <primitive object={scene} scale={3.45} position-y={-0.15} rotation-y={0.35} />;
 }
 
 export default function EarthCanvas() {
@@ -75,25 +41,28 @@ export default function EarthCanvas() {
       frameloop="always"
       dpr={[1, 1.8]}
       gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}
-      camera={{ fov: 42, near: 0.1, far: 200, position: [-5.4, 3.5, 7.2] }}
+      camera={{ fov: 38, near: 0.1, far: 200, position: [-5.8, 3.9, 7.8] }}
     >
       <Suspense fallback={<CanvasLoader />}>
-        <color attach="background" args={['#000000']} />
-        <ambientLight intensity={1.1} color="#dafeff" />
-        <directionalLight intensity={2.4} position={[4, 5, 4]} color="#b4f6ff" castShadow />
-        <pointLight intensity={2.2} position={[-5, 1, 3]} color="#67e8f9" />
-        <pointLight intensity={1.5} position={[0, -4, -2]} color="#a78bfa" />
+        <ambientLight intensity={1.02} color="#f8fbff" />
+        <hemisphereLight intensity={1} color="#93c5fd" groundColor="#0f172a" />
+        <directionalLight intensity={2.3} position={[4, 5, 4]} color="#ffffff" />
+        <pointLight intensity={1.85} position={[-4, 1, 3]} color="#67e8f9" />
+        <pointLight intensity={1.35} position={[2, 2, 4]} color="#f9a8d4" />
+        <pointLight intensity={1.05} position={[0, -3, -2]} color="#c4b5fd" />
         <OrbitControls
           autoRotate
-          autoRotateSpeed={1}
+          autoRotateSpeed={1.05}
           enablePan={false}
           enableZoom={false}
           maxPolarAngle={Math.PI / 2}
           minPolarAngle={Math.PI / 2}
         />
-        <PlanetCore />
+        <EarthModel />
         <Preload all />
       </Suspense>
     </Canvas>
   );
 }
+
+useGLTF.preload('/planet/scene.gltf');

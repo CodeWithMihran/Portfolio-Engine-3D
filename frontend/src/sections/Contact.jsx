@@ -43,9 +43,9 @@ export default function Contact() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
-          className="rounded-3xl border border-white/10 bg-slate-900/55 p-8 backdrop-blur-xl"
+          className="rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,rgba(10,18,32,0.95),rgba(10,18,32,0.78))] p-8 shadow-[0_24px_70px_rgba(2,6,23,0.34)] backdrop-blur-xl"
         >
-          <p className="text-xs font-mono uppercase tracking-[0.35em] text-slate-500">Communication Hub</p>
+          <p className="text-xs font-mono uppercase tracking-[0.35em] text-cyan-200/55">Communication Hub</p>
           <h3 className="mt-4 text-3xl font-black text-white">Secure Uplink</h3>
           <p className="mt-5 max-w-md leading-8 text-slate-400">
             {profile?.about?.slice(0, 180) ||
@@ -56,15 +56,15 @@ export default function Contact() {
             {profile?.email ? (
               <a
                 href={`mailto:${profile.email}`}
-                className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-slate-200 transition hover:bg-white/10"
+                className="flex items-center gap-4 rounded-2xl border border-cyan-300/12 bg-white/5 px-5 py-4 text-slate-200 transition hover:bg-white/10"
               >
-                <Mail className="text-violet-300" size={18} />
+                <Mail className="text-cyan-300" size={18} />
                 <span>{profile.email}</span>
               </a>
             ) : null}
             {profile?.location ? (
-              <div className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-slate-200">
-                <MapPin className="text-sky-300" size={18} />
+              <div className="flex items-center gap-4 rounded-2xl border border-orange-300/12 bg-white/5 px-5 py-4 text-slate-200">
+                <MapPin className="text-orange-200" size={18} />
                 <span>{profile.location}</span>
               </div>
             ) : null}
@@ -76,66 +76,69 @@ export default function Contact() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
-          className="rounded-3xl border border-blue-500/20 bg-slate-900/50 p-8 backdrop-blur-md transition-all duration-300 hover:border-slate-700 hover:bg-slate-800/50 hover:shadow-2xl hover:shadow-blue-500/10"
+          className="rounded-[30px] border border-cyan-300/16 bg-[linear-gradient(180deg,rgba(8,17,31,0.94),rgba(10,18,32,0.74))] p-8 shadow-[0_24px_70px_rgba(2,6,23,0.34)] backdrop-blur-xl transition-all duration-300 hover:border-cyan-300/24 hover:shadow-[0_28px_80px_rgba(34,211,238,0.08)]"
         >
-        {!sent ? (
-          <>
-            <h3 className="text-3xl font-black text-white">
-              Message <span className="bg-gradient-to-r from-violet-300 via-sky-300 to-emerald-300 bg-clip-text text-transparent">Terminal</span>
-            </h3>
-            <p className="mb-10 mt-4 text-slate-400">
-              Have a project in mind? Let&apos;s build something extraordinary.
-            </p>
+          {!sent ? (
+            <>
+              <h3 className="text-3xl font-black text-white">
+                Message{' '}
+                <span className="bg-gradient-to-r from-cyan-200 via-sky-300 to-orange-200 bg-clip-text text-transparent">
+                  Terminal
+                </span>
+              </h3>
+              <p className="mb-10 mt-4 text-slate-400">
+                Have a project in mind? Let&apos;s build something extraordinary.
+              </p>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <input
-                  type="text"
-                  placeholder="Name"
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <input
+                    type="text"
+                    placeholder="Name"
+                    required
+                    className="rounded-xl border border-slate-800 bg-slate-950/90 px-4 py-3 text-white outline-none transition-all focus:border-cyan-400"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  />
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    required
+                    className="rounded-xl border border-slate-800 bg-slate-950/90 px-4 py-3 text-white outline-none transition-all focus:border-cyan-400"
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  />
+                </div>
+                <textarea
+                  placeholder="Your Message"
+                  rows={5}
                   required
-                  className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition-all focus:border-blue-500"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className="w-full rounded-xl border border-slate-800 bg-slate-950/90 px-4 py-3 text-white outline-none transition-all focus:border-cyan-400"
+                  value={form.message}
+                  onChange={(e) => setForm({ ...form, message: e.target.value })}
                 />
-                <input
-                  type="email"
-                  placeholder="Email"
-                  required
-                  className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition-all focus:border-blue-500"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                />
-              </div>
-              <textarea
-                placeholder="Your Message"
-                rows={5}
-                required
-                className="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-3 text-white outline-none transition-all focus:border-blue-500"
-                value={form.message}
-                onChange={(e) => setForm({ ...form, message: e.target.value })}
-              />
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#06b6d4,#0ea5e9)] py-4 font-bold text-white shadow-[0_18px_45px_rgba(14,165,233,0.25)] transition-all active:scale-95 disabled:opacity-50 hover:brightness-110"
+                >
+                  {loading ? 'TRANSMITTING...' : <>TRANSMIT MESSAGE <Send size={18} /></>}
+                </button>
+              </form>
+            </>
+          ) : (
+            <div className="py-12">
+              <CheckCircle2 size={64} className="mx-auto mb-6 text-emerald-500" />
+              <h3 className="mb-2 text-2xl font-bold text-white">Message Transmitted</h3>
+              <p className="text-slate-400">I&apos;ll get back to you shortly.</p>
               <button
-                type="submit"
-                disabled={loading}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-4 font-bold text-white transition-all active:scale-95 disabled:opacity-50 hover:bg-blue-500"
+                onClick={() => setSent(false)}
+                className="mt-8 text-xs uppercase tracking-widest text-cyan-300 underline"
               >
-                {loading ? 'TRANSMITTING...' : <>TRANSMIT MESSAGE <Send size={18} /></>}
+                Send another message
               </button>
-            </form>
-          </>
-        ) : (
-          <div className="py-12">
-            <CheckCircle2 size={64} className="mx-auto mb-6 text-emerald-500" />
-            <h3 className="mb-2 text-2xl font-bold text-white">Message Transmitted</h3>
-            <p className="text-slate-400">I&apos;ll get back to you shortly.</p>
-            <button
-              onClick={() => setSent(false)}
-              className="mt-8 text-xs uppercase tracking-widest text-blue-400 underline"
-            >
-              Send another message
-            </button>
-          </div>
-        )}
+            </div>
+          )}
         </motion.div>
       </div>
     </section>

@@ -14,10 +14,10 @@ import { useStore } from './store/useStore';
 
 function LoadingShell() {
   return (
-    <main className="min-h-screen bg-[#020617] text-slate-100">
+    <main className="min-h-screen bg-[#07111f] text-slate-100">
       <div className="mx-auto flex min-h-screen max-w-7xl items-center justify-center px-6">
-        <div className="max-w-md rounded-3xl border border-slate-800 bg-slate-900/50 p-6 text-center backdrop-blur-md transition-all duration-300 hover:scale-[1.01] hover:border-slate-700 hover:bg-slate-800/50 hover:shadow-2xl hover:shadow-blue-500/10">
-          <p className="text-xs font-mono uppercase tracking-[0.35em] text-slate-500">
+        <div className="max-w-md rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(9,17,31,0.95),rgba(9,17,31,0.72))] p-7 text-center shadow-[0_24px_80px_rgba(2,6,23,0.45)] backdrop-blur-2xl">
+          <p className="text-xs font-mono uppercase tracking-[0.35em] text-cyan-200/55">
             Establishing uplink
           </p>
           <h1 className="mt-4 text-3xl font-bold text-white">Loading portfolio data...</h1>
@@ -38,8 +38,8 @@ export default function App() {
   }
 
   return (
-    <main className="relative min-h-screen bg-[#050816] selection:bg-violet-400/30 selection:text-white">
-      <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle_at_top,rgba(139,92,246,0.14),transparent_30%),radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.14),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(16,185,129,0.08),transparent_26%)]" />
+    <main className="relative min-h-screen overflow-hidden bg-[#07111f] selection:bg-cyan-300/25 selection:text-white">
+      <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.15),transparent_28%),radial-gradient(circle_at_top_right,rgba(14,165,233,0.14),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(251,146,60,0.1),transparent_26%),linear-gradient(180deg,#07111f_0%,#081121_45%,#091626_100%)]" />
       <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.06] [background-image:linear-gradient(rgba(148,163,184,0.18)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.18)_1px,transparent_1px)] [background-size:34px_34px]" />
       <StarsCanvas />
 
@@ -58,7 +58,7 @@ export default function App() {
           <div className="mx-auto flex max-w-7xl flex-col items-center gap-5 border-t border-white/10 pt-10 text-center">
             <Link
               to="/login"
-              className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-mono uppercase tracking-[0.32em] text-slate-300 transition hover:border-violet-300/30 hover:bg-violet-400/10 hover:text-white"
+              className="inline-flex items-center rounded-full border border-cyan-300/20 bg-cyan-400/10 px-4 py-2 text-[10px] font-mono uppercase tracking-[0.32em] text-cyan-100 transition hover:border-cyan-200/40 hover:bg-cyan-400/15 hover:text-white"
             >
               Admin Login
             </Link>
