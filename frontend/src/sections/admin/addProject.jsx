@@ -30,7 +30,7 @@ export default function AddProject() {
     <div className="max-w-3xl">
       <h1 className="text-3xl font-bold mb-8 italic tracking-tighter">INITIALIZE_NEW_PROJECT</h1>
       
-      <form onSubmit={handleSubmit} className="bento-card space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6 rounded-3xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-md transition-all duration-300 hover:scale-[1.01] hover:border-slate-700 hover:bg-slate-800/50 hover:shadow-2xl hover:shadow-blue-500/10">
         <div className="space-y-2">
           <label className="text-xs font-mono text-slate-500 uppercase tracking-widest">Project Title</label>
           <input 

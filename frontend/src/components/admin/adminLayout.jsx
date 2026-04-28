@@ -30,7 +30,7 @@ export default function AdminLayout() {
   return (
     <div className="min-h-screen bg-[#020617] text-slate-100">
       <div className="mx-auto flex min-h-screen max-w-7xl flex-col gap-6 px-6 py-6 lg:flex-row">
-        <aside className="bento-card h-fit w-full lg:sticky lg:top-6 lg:w-72">
+        <aside className="h-fit w-full rounded-3xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-md transition-all duration-300 hover:scale-[1.01] hover:border-slate-700 hover:bg-slate-800/50 hover:shadow-2xl hover:shadow-blue-500/10 lg:sticky lg:top-6 lg:w-72">
           <Link to="/" className="block">
             <p className="text-xs font-mono uppercase tracking-[0.35em] text-slate-500">
               Command pane

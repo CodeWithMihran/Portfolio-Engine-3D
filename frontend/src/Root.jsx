@@ -20,6 +20,16 @@ export default function Root() {
     init();
   }, [init]);
 
+  useEffect(() => {
+    document.documentElement.classList.add('scroll-smooth');
+    document.body.classList.add('bg-[#020617]', 'text-slate-100', 'antialiased', 'overflow-x-hidden');
+
+    return () => {
+      document.documentElement.classList.remove('scroll-smooth');
+      document.body.classList.remove('bg-[#020617]', 'text-slate-100', 'antialiased', 'overflow-x-hidden');
+    };
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>

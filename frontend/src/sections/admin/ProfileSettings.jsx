@@ -20,7 +20,7 @@ function ProfileForm({ initialProfile, onSaved }) {
   };
 
   return (
-    <form onSubmit={handleSave} className="bento-card space-y-6">
+    <form onSubmit={handleSave} className="space-y-6 rounded-3xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-md transition-all duration-300 hover:scale-[1.01] hover:border-slate-700 hover:bg-slate-800/50 hover:shadow-2xl hover:shadow-blue-500/10">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <label className="text-[10px] font-mono uppercase text-slate-500">Full Name</label>

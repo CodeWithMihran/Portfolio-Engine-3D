@@ -25,7 +25,7 @@ export default function JourneyManagement() {
             <button className="text-xs bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full border border-blue-500/20 hover:bg-blue-500/20 transition-all">+ Add</button>
           </div>
           {experience.map(exp => (
-            <div key={exp._id} className="bento-card p-4 flex justify-between group">
+            <div key={exp._id} className="group flex justify-between rounded-3xl border border-slate-800 bg-slate-900/50 p-4 backdrop-blur-md transition-all duration-300 hover:scale-[1.01] hover:border-slate-700 hover:bg-slate-800/50 hover:shadow-2xl hover:shadow-blue-500/10">
               <div>
                 <p className="font-bold text-sm">{exp.role}</p>
                 <p className="text-xs text-slate-500">{exp.companyName}</p>
@@ -42,7 +42,7 @@ export default function JourneyManagement() {
             <button className="text-xs bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/20 hover:bg-emerald-500/20 transition-all">+ Add</button>
           </div>
           {education.map(edu => (
-            <div key={edu._id} className="bento-card p-4 flex justify-between group">
+            <div key={edu._id} className="group flex justify-between rounded-3xl border border-slate-800 bg-slate-900/50 p-4 backdrop-blur-md transition-all duration-300 hover:scale-[1.01] hover:border-slate-700 hover:bg-slate-800/50 hover:shadow-2xl hover:shadow-blue-500/10">
               <div>
                 <p className="font-bold text-sm">{edu.degree}</p>
                 <p className="text-xs text-slate-500">{edu.institutionName}</p>

@@ -19,7 +19,7 @@ export default function SkillManagement() {
     <div className="max-w-4xl">
       <h1 className="text-3xl font-bold mb-8">SKILL_MANIFEST</h1>
       
-      <form onSubmit={addSkill} className="bento-card mb-8 flex flex-wrap gap-4 items-end">
+      <form onSubmit={addSkill} className="mb-8 flex flex-wrap gap-4 items-end rounded-3xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-md transition-all duration-300 hover:scale-[1.01] hover:border-slate-700 hover:bg-slate-800/50 hover:shadow-2xl hover:shadow-blue-500/10">
         <div className="flex-1 min-w-[200px]">
           <label className="text-[10px] font-mono text-slate-500 uppercase block mb-2">Skill Name</label>
           <input 
@@ -54,7 +54,7 @@ export default function SkillManagement() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {skills.map(s => (
-          <div key={s._id} className="bento-card flex justify-between items-center py-4">
+          <div key={s._id} className="flex items-center justify-between rounded-3xl border border-slate-800 bg-slate-900/50 px-6 py-4 backdrop-blur-md transition-all duration-300 hover:scale-[1.01] hover:border-slate-700 hover:bg-slate-800/50 hover:shadow-2xl hover:shadow-blue-500/10">
             <div className="flex items-center gap-3">
               <Zap size={16} className="text-blue-400" />
               <span className="font-bold">{s.name}</span>

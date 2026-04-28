@@ -43,7 +43,7 @@ export default function ProjectManagement() {
           projects.map((project) => (
             <div
               key={project._id}
-              className="bento-card flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
+              className="flex flex-col gap-4 rounded-3xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-md transition-all duration-300 hover:scale-[1.01] hover:border-slate-700 hover:bg-slate-800/50 hover:shadow-2xl hover:shadow-blue-500/10 lg:flex-row lg:items-center lg:justify-between"
             >
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-3">
@@ -78,7 +78,7 @@ export default function ProjectManagement() {
             </div>
           ))
         ) : (
-          <div className="bento-card text-slate-400">No projects found yet.</div>
+          <div className="rounded-3xl border border-slate-800 bg-slate-900/50 p-6 text-slate-400 backdrop-blur-md transition-all duration-300 hover:scale-[1.01] hover:border-slate-700 hover:bg-slate-800/50 hover:shadow-2xl hover:shadow-blue-500/10">No projects found yet.</div>
         )}
       </div>
     </section>

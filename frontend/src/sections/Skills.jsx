@@ -1,55 +1,54 @@
-import { Code2, Cpu, Database, Layout, Terminal, Wrench } from 'lucide-react';
+import { motion } from 'framer-motion';
+import SectionIntro from '../components/SectionIntro';
+import { BallCanvas } from '../components/canvas';
+import { fadeInUp, staggerContainer } from '../lib/motion';
+import { createSkillIconFallback, resolveMediaUrl } from '../lib/media';
 import { useStore } from '../store/useStore';
 
-const ICON_MAP = {
-  frontend: <Layout className="text-blue-400" />,
-  backend: <Terminal className="text-emerald-400" />,
-  database: <Database className="text-amber-400" />,
-  programming: <Code2 className="text-violet-400" />,
-  tools: <Wrench className="text-rose-400" />,
-  other: <Cpu className="text-slate-400" />,
-};
+void motion;
 
 export default function Skills() {
-  const skillsByCategory = useStore((state) => state.skillsByCategory);
+  const skills = useStore((state) => state.skills);
 
   return (
-    <section id="skills" className="mx-auto max-w-7xl px-6 py-24">
-      <div className="mb-16">
-        <h2 className="text-4xl font-bold text-white">
-          Technical <span className="text-gradient">Arsenal</span>
-        </h2>
-        <p className="mt-4 text-slate-400">Software and technologies I use to bring ideas to life.</p>
-      </div>
+    <section id="skills" className="mx-auto max-w-7xl scroll-mt-24 px-6 py-24">
+      <SectionIntro
+        eyebrow="Technologies"
+        title="Tech"
+        accent="Stack"
+        body="A 3D skill presentation inspired by the reference portfolio, now driven by your backend-managed skill data."
+        align="center"
+      />
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {Object.entries(skillsByCategory).map(([category, items]) => (
-          <div key={category} className="bento-card">
-            <div className="mb-6 flex items-center gap-3">
-              <div className="rounded-lg border border-white/10 bg-white/5 p-2">
-                {ICON_MAP[category] || ICON_MAP.other}
+      <motion.div
+        variants={staggerContainer}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.1 }}
+        className="flex flex-row flex-wrap justify-center gap-10"
+      >
+        {skills.map((skill) => {
+          const icon = resolveMediaUrl(skill.icon, createSkillIconFallback(skill.name));
+
+          return (
+            <motion.div
+              key={skill._id}
+              variants={fadeInUp}
+              className="flex w-32 flex-col items-center gap-3"
+            >
+              <div className="h-28 w-28">
+                <BallCanvas icon={icon} />
               </div>
-              <h3 className="text-lg font-bold uppercase tracking-widest text-slate-200">{category}</h3>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              {items.map((skill) => (
-                <div
-                  key={skill._id}
-                  className="group relative rounded-full border border-slate-800 bg-slate-950 px-3 py-1.5 transition-colors hover:border-blue-500/50"
-                >
-                  <span className="text-sm text-slate-300 transition-colors group-hover:text-white">
-                    {skill.name}
-                  </span>
-                  <div className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 rounded bg-blue-600 px-2 py-1 text-[10px] font-bold opacity-0 transition-opacity group-hover:opacity-100">
-                    {skill.proficiency}%
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
+              <div className="text-center">
+                <p className="text-sm font-semibold text-white">{skill.name}</p>
+                <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-slate-500">
+                  {skill.category}
+                </p>
+              </div>
+            </motion.div>
+          );
+        })}
+      </motion.div>
     </section>
   );
 }

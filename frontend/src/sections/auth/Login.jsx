@@ -34,7 +34,7 @@ export default function Login() {
       <div className="absolute h-[500px] w-[500px] rounded-full bg-blue-600/10 blur-[120px]" />
 
       <div className="z-10 w-full max-w-md">
-        <div className="bento-card relative overflow-hidden border-blue-500/20 p-8">
+        <div className="relative overflow-hidden rounded-3xl border border-blue-500/20 bg-slate-900/50 p-8 backdrop-blur-md transition-all duration-300 hover:scale-[1.01] hover:border-slate-700 hover:bg-slate-800/50 hover:shadow-2xl hover:shadow-blue-500/10">
           <div className="mb-8 flex items-center gap-2 border-b border-slate-800 pb-4">
             <TerminalIcon size={18} className="text-blue-500" />
             <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-slate-500">

@@ -32,9 +32,9 @@ export default function Messages() {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold mb-8">Inbound <span className="text-gradient">Transmissions</span></h1>
+      <h1 className="text-3xl font-bold mb-8">Inbound <span className="bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">Transmissions</span></h1>
       
-      <div className="bento-card p-0 overflow-hidden">
+      <div className="overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/50 p-0 backdrop-blur-md transition-all duration-300 hover:scale-[1.01] hover:border-slate-700 hover:bg-slate-800/50 hover:shadow-2xl hover:shadow-blue-500/10">
         <table className="w-full text-left border-collapse">
           <thead className="bg-white/5 text-slate-400 text-xs uppercase tracking-widest font-mono">
             <tr>
