@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Star, Trash2 } from 'lucide-react';
+import { Pencil, Star, Trash2 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useStore } from '../../store/useStore';
 
@@ -60,6 +60,13 @@ export default function ProjectManagement() {
               </div>
 
               <div className="flex flex-wrap gap-3">
+                <Link
+                  to={`/admin/projects/edit/${project._id}`}
+                  className="inline-flex items-center gap-2 rounded-2xl border border-cyan-500/20 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-200 transition hover:bg-cyan-500/15"
+                >
+                  <Pencil size={16} />
+                  Edit
+                </Link>
                 <button
                   onClick={() => handleToggleFeatured(project._id)}
                   className="inline-flex items-center gap-2 rounded-2xl border border-amber-500/20 bg-amber-500/10 px-4 py-2 text-sm font-semibold text-amber-300 transition hover:bg-amber-500/15"

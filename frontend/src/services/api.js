@@ -43,13 +43,25 @@ export const api = {
   deleteSkill: (id) => http.delete(`/skills/${id}`),
 
   getExperience: () => http.get('/experiences'),
+  createExperience: (data) => http.post('/experiences', data),
+  updateExperience: (id, data) => http.put(`/experiences/${id}`, data),
   deleteExperience: (id) => http.delete(`/experiences/${id}`),
 
   getEducation: () => http.get('/education'),
+  createEducation: (data) => http.post('/education', data),
+  updateEducation: (id, data) => http.put(`/education/${id}`, data),
   deleteEducation: (id) => http.delete(`/education/${id}`),
 
   getAchievements: () => http.get('/achievements'),
+  createAchievement: (data) => http.post('/achievements', data),
+  updateAchievement: (id, data) => http.put(`/achievements/${id}`, data),
+  deleteAchievement: (id) => http.delete(`/achievements/${id}`),
+  toggleFeaturedAchievement: (id) => http.patch(`/achievements/${id}/featured`),
   getCertificates: () => http.get('/certificates'),
+  createCertificate: (data) => http.post('/certificates', data),
+  updateCertificate: (id, data) => http.put(`/certificates/${id}`, data),
+  deleteCertificate: (id) => http.delete(`/certificates/${id}`),
+  toggleFeaturedCertificate: (id) => http.patch(`/certificates/${id}/featured`),
 
   sendMessage: (data) => http.post('/contact', data),
   getMessages: () => http.get('/contact'),

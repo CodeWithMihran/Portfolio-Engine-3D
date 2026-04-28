@@ -5,6 +5,8 @@ import App from './App';
 import AdminLayout from './components/admin/adminLayout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import AddProject from './sections/admin/addProject';
+import AchievementManagement from './sections/admin/AchievementManagement';
+import CertificateManagement from './sections/admin/CertificateManagement';
 import JourneyManagement from './sections/admin/JourneyManagement';
 import Messages from './sections/admin/Messages';
 import ProfileSettings from './sections/admin/ProfileSettings';
@@ -49,6 +51,8 @@ export default function Root() {
           <Route path="projects/edit/:id" element={<AddProject isEdit />} />
           <Route path="skills" element={<SkillManagement />} />
           <Route path="journey" element={<JourneyManagement />} />
+          <Route path="credentials" element={<CertificateManagement />} />
+          <Route path="achievements" element={<AchievementManagement />} />
           <Route path="messages" element={<Messages />} />
           <Route path="profile" element={<ProfileSettings />} />
         </Route>

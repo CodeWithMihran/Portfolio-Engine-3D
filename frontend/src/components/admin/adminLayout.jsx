@@ -1,18 +1,22 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useStore } from '../../store/useStore';
 import {
+  Award,
   FolderKanban,
   LogOut,
   MessageSquare,
   Route,
   Settings,
   Sparkles,
+  Trophy,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
   { to: '/admin/projects', label: 'Projects', icon: FolderKanban },
   { to: '/admin/skills', label: 'Skills', icon: Sparkles },
   { to: '/admin/journey', label: 'Journey', icon: Route },
+  { to: '/admin/credentials', label: 'Credentials', icon: Award },
+  { to: '/admin/achievements', label: 'Achievements', icon: Trophy },
   { to: '/admin/messages', label: 'Messages', icon: MessageSquare },
   { to: '/admin/profile', label: 'Profile', icon: Settings },
 ];

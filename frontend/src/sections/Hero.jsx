@@ -126,46 +126,43 @@ export default function Hero() {
         </motion.div>
 
         <motion.div variants={fadeInRight} className="relative">
-          <div className="absolute -left-10 top-10 hidden h-24 w-24 rounded-full bg-violet-400/15 blur-3xl lg:block" />
-          <div className="absolute -right-2 bottom-8 hidden h-28 w-28 rounded-full bg-sky-400/15 blur-3xl lg:block" />
+          <div className="pointer-events-none absolute left-10 top-16 hidden h-40 w-40 rounded-full bg-cyan-400/18 blur-[110px] lg:block" />
+          <div className="pointer-events-none absolute right-4 top-8 hidden h-56 w-56 rounded-full bg-fuchsia-500/14 blur-[135px] lg:block" />
+          <div className="pointer-events-none absolute bottom-10 left-1/2 hidden h-40 w-40 -translate-x-1/2 rounded-full bg-emerald-400/14 blur-[110px] lg:block" />
 
-          <div className="relative rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(17,24,39,0.92),rgba(15,23,42,0.68))] p-6 shadow-[0_30px_80px_rgba(2,6,23,0.5)] backdrop-blur-2xl">
-            <div className="absolute inset-0 rounded-[32px] bg-[radial-gradient(circle_at_top,rgba(168,85,247,0.18),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(56,189,248,0.16),transparent_28%)]" />
-            <div className="relative">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-mono uppercase tracking-[0.35em] text-slate-500">Showcase Capsule</p>
-                  <h3 className="mt-3 text-2xl font-bold text-white">{profile?.tagline || 'Developer Portfolio'}</h3>
-                </div>
-                <div className="flex h-20 w-20 items-center justify-center rounded-[28px] border border-white/10 bg-white/5 text-2xl font-black text-white">
-                  {firstName.slice(0, 1)}
-                  {restName.slice(0, 1)}
-                </div>
+          <div className="relative mx-auto flex h-[520px] w-full max-w-[560px] items-center justify-center">
+            <div className="pointer-events-none absolute inset-x-12 bottom-14 h-14 rounded-full bg-cyan-400/20 blur-3xl" />
+            <div className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.1),transparent_52%)]" />
+            <div className="h-[460px] w-[460px] max-w-full">
+              <EarthCanvas />
+            </div>
+
+            <div className="absolute left-0 top-14 rounded-[28px] border border-white/10 bg-slate-950/60 px-5 py-4 shadow-[0_18px_45px_rgba(2,6,23,0.38)] backdrop-blur-xl">
+              <p className="text-[11px] font-mono uppercase tracking-[0.32em] text-slate-500">Featured Projects</p>
+              <p className="mt-2 text-4xl font-black text-white">{featuredProjects.length}</p>
+            </div>
+
+            <div className="absolute right-0 top-28 rounded-[28px] border border-white/10 bg-slate-950/60 px-5 py-4 shadow-[0_18px_45px_rgba(2,6,23,0.38)] backdrop-blur-xl">
+              <p className="text-[11px] font-mono uppercase tracking-[0.32em] text-slate-500">Skills Catalog</p>
+              <p className="mt-2 text-4xl font-black text-white">{skills.length}</p>
+            </div>
+
+            <div className="absolute bottom-8 left-8 max-w-xs rounded-[30px] border border-white/10 bg-slate-950/55 px-5 py-4 shadow-[0_18px_45px_rgba(2,6,23,0.42)] backdrop-blur-xl">
+              <p className="text-[11px] font-mono uppercase tracking-[0.32em] text-slate-500">Current Focus</p>
+              <p className="mt-3 text-sm leading-7 text-slate-200">
+                {profile?.about?.slice(0, 145) ||
+                  'Designing expressive interfaces, building dependable backend integrations, and turning ideas into polished experiences.'}
+              </p>
+            </div>
+
+            <div className="absolute bottom-16 right-6 flex items-center gap-3 rounded-full border border-white/10 bg-slate-950/55 px-4 py-3 shadow-[0_18px_45px_rgba(2,6,23,0.42)] backdrop-blur-xl">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-cyan-300 via-sky-400 to-violet-500 text-sm font-black text-slate-950">
+                {firstName.slice(0, 1)}
+                {restName.slice(0, 1)}
               </div>
-
-              <div className="relative mt-8 overflow-hidden rounded-[28px] border border-white/10 bg-black/20">
-                <div className="h-[320px]">
-                  <EarthCanvas />
-                </div>
-              </div>
-
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <div className="rounded-[28px] border border-white/10 bg-black/20 p-5">
-                  <p className="text-[11px] font-mono uppercase tracking-[0.32em] text-slate-500">Featured Projects</p>
-                  <p className="mt-4 text-5xl font-black text-white">{featuredProjects.length}</p>
-                </div>
-                <div className="rounded-[28px] border border-white/10 bg-black/20 p-5">
-                  <p className="text-[11px] font-mono uppercase tracking-[0.32em] text-slate-500">Skills Catalog</p>
-                  <p className="mt-4 text-5xl font-black text-white">{skills.length}</p>
-                </div>
-              </div>
-
-              <div className="mt-5 rounded-[28px] border border-white/10 bg-black/20 p-5">
-                <p className="text-[11px] font-mono uppercase tracking-[0.32em] text-slate-500">Current Focus</p>
-                <p className="mt-4 max-w-lg text-lg leading-8 text-slate-200">
-                  {profile?.about?.slice(0, 180) ||
-                    'Designing expressive interfaces, building dependable backend integrations, and turning ideas into polished experiences.'}
-                </p>
+              <div>
+                <p className="text-[11px] font-mono uppercase tracking-[0.28em] text-slate-500">Presentation</p>
+                <p className="text-sm font-semibold text-white">{profile?.tagline || 'Developer Portfolio'}</p>
               </div>
             </div>
           </div>

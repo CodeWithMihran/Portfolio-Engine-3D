@@ -1,13 +1,12 @@
+import { Link } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import About from './sections/About';
 import Achievements from './sections/Achievements';
 import Certificates from './sections/Certificates';
 import Contact from './sections/Contact';
-import Credentials from './sections/Credentials';
 import Education from './sections/Education';
 import Experience from './sections/Experience';
 import Hero from './sections/Hero';
-import Journey from './sections/Journey';
 import Projects from './sections/Projects';
 import Skills from './sections/Skills';
 import { StarsCanvas } from './components/canvas';
@@ -55,8 +54,18 @@ export default function App() {
         {sectionVisibility.certificates !== false && <Certificates />}
         {sectionVisibility.achievements !== false && <Achievements />}
         {sectionVisibility.contact !== false && <Contact />}
-        <footer className="px-6 py-12 text-center text-xs font-mono uppercase tracking-[0.3em] text-slate-500">
-          &copy; {new Date().getFullYear()} Md Mihran Sohail. All rights reserved.
+        <footer className="px-6 py-14">
+          <div className="mx-auto flex max-w-7xl flex-col items-center gap-5 border-t border-white/10 pt-10 text-center">
+            <Link
+              to="/login"
+              className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-mono uppercase tracking-[0.32em] text-slate-300 transition hover:border-violet-300/30 hover:bg-violet-400/10 hover:text-white"
+            >
+              Admin Login
+            </Link>
+            <p className="text-xs font-mono uppercase tracking-[0.3em] text-slate-500">
+              &copy; {new Date().getFullYear()} Md Mihran Sohail. All rights reserved.
+            </p>
+          </div>
         </footer>
       </div>
     </main>
