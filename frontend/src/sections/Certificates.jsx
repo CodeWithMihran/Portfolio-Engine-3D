@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Award, ExternalLink } from 'lucide-react';
+import EmptyStatePanel from '../components/EmptyStatePanel';
 import SectionIntro from '../components/SectionIntro';
 import { createLogoFallback, createProjectImageFallback, resolveMediaUrl } from '../lib/media';
 import { fadeInUp, staggerContainer } from '../lib/motion';
@@ -14,7 +15,7 @@ export default function Certificates() {
   const certificates = useStore((state) => state.certificates);
 
   return (
-    <section id="certificates" className="mx-auto max-w-7xl scroll-mt-24 px-6 py-24">
+    <section id="certificates" className="mx-auto max-w-7xl scroll-mt-24 px-4 py-20 sm:px-6 sm:py-24">
       <SectionIntro
         eyebrow="Verified Learning"
         title="Certificates"
@@ -46,7 +47,7 @@ export default function Certificates() {
               <motion.div
                 key={certificate._id}
                 variants={fadeInUp}
-                className="group overflow-hidden rounded-[30px] border border-cyan-300/12 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.18),transparent_26%),radial-gradient(circle_at_bottom_right,rgba(251,191,36,0.12),transparent_24%),linear-gradient(180deg,rgba(10,18,32,0.95),rgba(10,18,32,0.82))] shadow-[0_24px_65px_rgba(2,6,23,0.34)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-cyan-300/24 hover:shadow-[0_28px_75px_rgba(34,211,238,0.1)]"
+                className="group overflow-hidden rounded-[30px] border border-amber-300/12 bg-[radial-gradient(circle_at_top_left,rgba(251,191,36,0.18),transparent_26%),radial-gradient(circle_at_bottom_right,rgba(34,211,238,0.12),transparent_24%),linear-gradient(180deg,rgba(10,18,32,0.95),rgba(10,18,32,0.82))] shadow-[0_24px_65px_rgba(2,6,23,0.34)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-amber-300/24 hover:shadow-[0_28px_75px_rgba(251,191,36,0.1)]"
               >
                 {cover ? (
                   <div className="relative h-40 overflow-hidden">
@@ -68,16 +69,16 @@ export default function Certificates() {
                     />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-3">
-                        <Award className="text-cyan-300" size={20} />
+                        <Award className="text-amber-300" size={20} />
                         <h3 className="text-lg font-bold uppercase tracking-tight text-white">
                           {certificate.title}
                         </h3>
                       </div>
-                      <p className="mt-2 text-sm text-cyan-100/80">Issued by {certificate.issuer}</p>
+                      <p className="mt-2 text-sm text-amber-100/80">Issued by {certificate.issuer}</p>
                     </div>
                   </div>
 
-                  <div className="space-y-1 text-[11px] font-mono uppercase tracking-[0.2em] text-cyan-100/45">
+                  <div className="space-y-1 text-[11px] font-mono uppercase tracking-[0.2em] text-amber-100/45">
                     <p>Issued: {formatDate(certificate.issueDate)}</p>
                     {certificate.expiryDate ? <p>Expires: {formatDate(certificate.expiryDate)}</p> : null}
                   </div>
@@ -91,7 +92,7 @@ export default function Certificates() {
                       href={certificate.credentialURL}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-2 rounded-full border border-cyan-300/14 bg-cyan-400/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-cyan-100 transition hover:bg-cyan-400/15"
+                      className="inline-flex items-center gap-2 rounded-full border border-amber-300/14 bg-amber-400/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-amber-100 transition hover:bg-amber-400/15"
                     >
                       Verify Credential <ExternalLink size={12} />
                     </a>
@@ -101,9 +102,14 @@ export default function Certificates() {
             );
           })
         ) : (
-          <div className="rounded-[30px] border border-cyan-300/12 bg-[linear-gradient(180deg,rgba(10,18,32,0.94),rgba(10,18,32,0.8))] p-6 text-slate-300/75 shadow-[0_20px_55px_rgba(2,6,23,0.28)] backdrop-blur-xl">
-            No certificates found yet.
-          </div>
+          <EmptyStatePanel
+            eyebrow="Verified Learning"
+            title="Certificate cards will appear here once they are published."
+            body="Add certificate records in the admin console to show issuer logos, cover images, dates, and verification links."
+            ctaLabel="Add Certificates"
+            ctaHref="/login"
+            tone="gold"
+          />
         )}
       </motion.div>
     </section>

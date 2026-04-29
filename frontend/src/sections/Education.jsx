@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { GraduationCap } from 'lucide-react';
+import EmptyStatePanel from '../components/EmptyStatePanel';
 import SectionIntro from '../components/SectionIntro';
 import { createLogoFallback, resolveMediaUrl } from '../lib/media';
 import { fadeInUp, staggerContainer } from '../lib/motion';
@@ -16,7 +17,7 @@ export default function Education() {
   const education = useStore((state) => state.education);
 
   return (
-    <section id="education" className="mx-auto max-w-7xl scroll-mt-24 px-6 py-24">
+    <section id="education" className="mx-auto max-w-7xl scroll-mt-24 px-4 py-20 sm:px-6 sm:py-24">
       <SectionIntro
         eyebrow="Learning Journey"
         title="Education"
@@ -99,9 +100,14 @@ export default function Education() {
             );
           })
         ) : (
-          <div className="rounded-[30px] border border-sky-300/12 bg-[linear-gradient(180deg,rgba(12,20,37,0.94),rgba(12,20,37,0.8))] p-6 text-slate-300/75 shadow-[0_20px_55px_rgba(2,6,23,0.28)] backdrop-blur-xl">
-            No education records yet.
-          </div>
+          <EmptyStatePanel
+            eyebrow="Education Path"
+            title="Academic milestones will appear here once you add them."
+            body="Add schools, degrees, dates, and coursework in the admin console to complete this section with a stronger blue academic identity."
+            ctaLabel="Add Education"
+            ctaHref="/login"
+            tone="blue"
+          />
         )}
       </motion.div>
     </section>

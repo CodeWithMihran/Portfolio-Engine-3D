@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Award, Briefcase, Code2, Contact, GraduationCap, Home, Menu, Sparkles, Trophy, X } from 'lucide-react';
+import { Award, Briefcase, Code2, Contact, Download, GraduationCap, Home, Menu, Sparkles, Trophy, X } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useStore } from '../store/useStore';
@@ -20,6 +20,7 @@ const NAV_ITEMS = [
   { label: 'Education', href: '#education', icon: GraduationCap },
   { label: 'Certificates', href: '#certificates', icon: Award },
   { label: 'Achievements', href: '#achievements', icon: Trophy },
+  { label: 'Resume', href: '#resume', icon: Download },
   { label: 'Contact', href: '#contact', icon: Contact },
 ];
 

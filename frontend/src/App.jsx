@@ -1,3 +1,4 @@
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Navbar from './components/Navbar';
@@ -9,12 +10,14 @@ import Education from './sections/Education';
 import Experience from './sections/Experience';
 import Hero from './sections/Hero';
 import Projects from './sections/Projects';
+import Resume from './sections/Resume';
 import Skills from './sections/Skills';
-import { StarsCanvas } from './components/canvas';
 import { sectionReveal } from './lib/motion';
 import { useStore } from './store/useStore';
 
 void motion;
+
+const StarsCanvas = lazy(() => import('./components/canvas/Stars'));
 
 function LoadingShell() {
   return (
@@ -34,6 +37,12 @@ function LoadingShell() {
 export default function App() {
   const loading = useStore((state) => state.loading);
   const profile = useStore((state) => state.profile);
+  const [showStars, setShowStars] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setShowStars(true), 250);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   const sectionVisibility = profile?.sectionVisibility || {};
 
@@ -49,6 +58,7 @@ export default function App() {
     sectionVisibility.education !== false ? <Education key="education" /> : null,
     sectionVisibility.certificates !== false ? <Certificates key="certificates" /> : null,
     sectionVisibility.achievements !== false ? <Achievements key="achievements" /> : null,
+    profile?.resume ? <Resume key="resume" /> : null,
     sectionVisibility.contact !== false ? <Contact key="contact" /> : null,
   ].filter(Boolean);
 
@@ -56,7 +66,11 @@ export default function App() {
     <main className="relative min-h-screen overflow-hidden bg-[#07111f] selection:bg-cyan-300/25 selection:text-white">
       <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.15),transparent_28%),radial-gradient(circle_at_top_right,rgba(14,165,233,0.14),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(251,146,60,0.1),transparent_26%),linear-gradient(180deg,#07111f_0%,#081121_45%,#091626_100%)]" />
       <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.06] [background-image:linear-gradient(rgba(148,163,184,0.18)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.18)_1px,transparent_1px)] [background-size:34px_34px]" />
-      <StarsCanvas />
+      {showStars ? (
+        <Suspense fallback={null}>
+          <StarsCanvas />
+        </Suspense>
+      ) : null}
 
       <div className="relative z-10">
         <Navbar />

@@ -72,7 +72,9 @@ export const api = {
   toggleFeaturedCertificate: (id) => http.patch(`/certificates/${id}/featured`),
 
   sendMessage: (data) => http.post('/contact', data),
-  getMessages: () => http.get('/contact'),
+  getMessages: (params = {}) => http.get('/contact', { params }),
+  getMessageStats: () => http.get('/contact/stats'),
+  exportMessages: () => http.get('/contact/export', { responseType: 'blob' }),
   updateMessage: (id, data) => http.patch(`/contact/${id}`, data),
   deleteMessage: (id) => http.delete(`/contact/${id}`),
 
