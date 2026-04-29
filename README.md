@@ -1,41 +1,47 @@
 # Portfolio-Engine-3D
 
-> A full-stack 3D portfolio project with dynamic, admin-controlled content.
+> A full-stack portfolio project with dynamic, admin-controlled content.
 
----
+## Overview
 
-## 🌐 Overview
+Portfolio Engine 3D combines a React frontend with an Express and MongoDB backend. The project is structured so the backend API and the frontend app can be deployed separately.
 
-Portfolio Engine 3D is a work-in-progress project aimed at building a modern, interactive developer portfolio using 3D visuals and a full-stack architecture.
+## Stack
 
-The goal of this project is to create a portfolio that is not only visually engaging but also dynamically manageable through a secure admin panel.
+- Frontend: React, Vite, Tailwind CSS, Three.js
+- Backend: Node.js, Express
+- Database: MongoDB Atlas
+- Authentication: JWT
 
----
+## Deployment Notes
 
-## 🛠️ Planned Tech Stack
+### Backend on Render
 
-- Frontend: React.js, Three.js, Tailwind CSS  
-- Backend: Node.js, Express.js  
-- Database: MongoDB  
-- Authentication: JWT  
+Set these environment variables on the Render backend service:
 
----
+```env
+MONGO_URI=mongodb+srv://<username>:<password>@<cluster>/<database>?retryWrites=true&w=majority&appName=<appName>
+JWT_SECRET=your-secret
+CLIENT_URL=https://your-frontend-domain.onrender.com
+```
 
-## 🎯 Project Goals
+Optional:
 
-- Build an interactive 3D portfolio experience  
-- Implement a full-stack architecture (MERN)  
-- Create an admin dashboard to manage content  
-- Make the portfolio dynamic and easily editable  
+```env
+CLIENT_URLS=https://your-frontend-domain.onrender.com,https://your-preview-domain.onrender.com
+```
 
----
+Notes:
 
-## 📌 Status
+- Do not use `mongodb://127.0.0.1:27017/portfolio` on Render.
+- `PORT` is provided automatically by Render for the backend service.
 
-🚧 Currently in development — initial setup phase.
+### Frontend on Render
 
----
+If you deploy the frontend separately, set:
 
-## 🧠 Author
+```env
+VITE_API_BASE_URL=https://your-backend-domain.onrender.com/api
+```
 
-Mihran Sohail
+The frontend code uses `VITE_API_BASE_URL`, not `VITE_API_URL`.

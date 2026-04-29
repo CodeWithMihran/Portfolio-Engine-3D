@@ -1,4 +1,4 @@
-import Skill from "../models/Skill.js";
+import Skill from "../models/skill.js";
 
 
 // 📌 GET ALL SKILLS (Public)

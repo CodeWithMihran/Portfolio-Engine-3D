@@ -1,4 +1,4 @@
-import Profile from "../models/Profile.js";
+import Profile from "../models/profile.js";
 
 // 📌 GET PROFILE (Public)
 export const getProfile = async (req, res) => {

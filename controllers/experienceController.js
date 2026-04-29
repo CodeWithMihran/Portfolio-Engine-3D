@@ -1,4 +1,4 @@
-import Experience from "../models/Experience.js";
+import Experience from "../models/experience.js";
 
 
 // 📌 GET ALL EXPERIENCES (Public)
