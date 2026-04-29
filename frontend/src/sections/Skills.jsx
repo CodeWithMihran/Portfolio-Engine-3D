@@ -2,11 +2,50 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import SectionIntro from '../components/SectionIntro';
 import { BallCanvas } from '../components/canvas';
-import { fadeInUp, staggerContainer } from '../lib/motion';
 import { createSkillIconFallback, resolveMediaUrl } from '../lib/media';
+import { fadeInUp, staggerContainer } from '../lib/motion';
 import { useStore } from '../store/useStore';
 
 void motion;
+
+const skillPalettes = [
+  {
+    baseColor: '#fef3c7',
+    emissiveColor: '#f59e0b',
+    ambientColor: '#fff7ed',
+    directionalColor: '#fde68a',
+  },
+  {
+    baseColor: '#dbeafe',
+    emissiveColor: '#2563eb',
+    ambientColor: '#eff6ff',
+    directionalColor: '#93c5fd',
+  },
+  {
+    baseColor: '#dcfce7',
+    emissiveColor: '#10b981',
+    ambientColor: '#ecfdf5',
+    directionalColor: '#6ee7b7',
+  },
+  {
+    baseColor: '#f5d0fe',
+    emissiveColor: '#c026d3',
+    ambientColor: '#fdf4ff',
+    directionalColor: '#f0abfc',
+  },
+  {
+    baseColor: '#fde2e8',
+    emissiveColor: '#e11d48',
+    ambientColor: '#fff1f2',
+    directionalColor: '#fda4af',
+  },
+  {
+    baseColor: '#ccfbf1',
+    emissiveColor: '#0f766e',
+    ambientColor: '#f0fdfa',
+    directionalColor: '#5eead4',
+  },
+];
 
 export default function Skills() {
   const skills = useStore((state) => state.skills);
@@ -29,17 +68,24 @@ export default function Skills() {
         className="flex flex-row flex-wrap justify-center gap-10"
       >
         {skills.length ? (
-          skills.map((skill) => {
+          skills.map((skill, index) => {
             const icon = resolveMediaUrl(skill.icon, createSkillIconFallback(skill.name));
+            const palette = skillPalettes[index % skillPalettes.length];
 
             return (
               <motion.div
                 key={skill._id}
                 variants={fadeInUp}
-                className="flex w-32 flex-col items-center gap-3"
+                className="flex w-32 flex-col items-center gap-4"
               >
-                <div className="h-28 w-28">
-                  <BallCanvas icon={icon} />
+                <div className="h-32 w-32 drop-shadow-[0_12px_30px_rgba(34,211,238,0.18)]">
+                  <BallCanvas
+                    icon={icon}
+                    baseColor={palette.baseColor}
+                    emissiveColor={palette.emissiveColor}
+                    ambientColor={palette.ambientColor}
+                    directionalColor={palette.directionalColor}
+                  />
                 </div>
                 <div className="text-center">
                   <p className="text-sm font-semibold text-white">{skill.name}</p>

@@ -1,8 +1,20 @@
 import { motion } from 'framer-motion';
 import { Code2, ExternalLink } from 'lucide-react';
 import SectionIntro from '../components/SectionIntro';
+import { createProjectImageFallback, resolveMediaUrl } from '../lib/media';
 import { fadeInUp, staggerContainer } from '../lib/motion';
 import { useStore } from '../store/useStore';
+
+const projectHighlights = (project) =>
+  [project?.challenges, project?.learnings]
+    .flatMap((value) =>
+      String(value || '')
+        .split(/\r?\n|[.!?]+/)
+        .map((item) => item.trim())
+        .filter(Boolean)
+    )
+    .filter((item, index, array) => array.indexOf(item) === index)
+    .slice(0, 3);
 
 void motion;
 
@@ -25,62 +37,131 @@ export default function Projects() {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.1 }}
-        className="grid grid-cols-1 gap-6 md:grid-cols-12"
+        className="grid grid-cols-1 gap-6 xl:grid-cols-2"
       >
-        {visibleProjects.map((project, index) => (
-          <motion.div
-            key={project._id}
-            variants={fadeInUp}
-            className={`relative group overflow-hidden rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,rgba(11,20,35,0.94),rgba(10,18,32,0.76))] p-6 shadow-[0_24px_70px_rgba(2,6,23,0.34)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-cyan-300/20 hover:shadow-[0_30px_80px_rgba(34,211,238,0.1)] ${
-              index === 0 ? 'md:col-span-8' : 'md:col-span-4'
-            }`}
-          >
-            <div className="absolute inset-0 rounded-[30px] bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.16),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(251,146,60,0.12),transparent_26%)] opacity-0 transition-opacity group-hover:opacity-100" />
-            <div className="relative z-10 flex h-full flex-col justify-between">
-              <div>
-                <div className="mb-5 flex items-center gap-3">
-                  <span className="rounded-full border border-cyan-300/20 bg-cyan-400/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.24em] text-cyan-100">
+        {visibleProjects.map((project) => {
+          const image = resolveMediaUrl(
+            project.thumbnail || project.images?.[0],
+            createProjectImageFallback(project.title)
+          );
+          const highlights = projectHighlights(project);
+
+          return (
+            <motion.article
+              key={project._id}
+              variants={fadeInUp}
+              className="group overflow-hidden rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(9,17,31,0.95),rgba(10,18,32,0.82))] shadow-[0_24px_70px_rgba(2,6,23,0.32)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-cyan-300/20 hover:shadow-[0_30px_80px_rgba(34,211,238,0.1)]"
+            >
+              <div className="relative h-56 overflow-hidden">
+                <img
+                  src={image}
+                  alt={project.title}
+                  className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                />
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,17,31,0.08),rgba(7,17,31,0.8))]" />
+                <div className="absolute left-5 top-5 flex flex-wrap gap-2">
+                  <span className="rounded-full border border-cyan-300/16 bg-slate-950/55 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.24em] text-cyan-100">
                     {project.status || 'completed'}
                   </span>
                   {project.featured ? (
-                    <span className="rounded-full border border-orange-300/20 bg-orange-400/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.24em] text-orange-100">
-                      featured
+                    <span className="rounded-full border border-orange-300/16 bg-orange-400/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.24em] text-orange-100">
+                      Featured
                     </span>
                   ) : null}
                 </div>
-                <h3 className="mb-3 text-2xl font-bold transition-colors group-hover:text-cyan-200">
-                  {project.title}
-                </h3>
-                <p className="mb-6 text-sm leading-relaxed text-slate-400">
-                  {project.shortDescription || project.description}
-                </p>
-                <div className="mb-8 flex flex-wrap gap-2">
-                  {(project.technologies || []).slice(0, 3).map((tech) => (
-                    <span
-                      key={tech}
-                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-slate-300"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
               </div>
 
-              <div className="flex gap-4">
-                {project.githubLink && (
-                  <a href={project.githubLink} target="_blank" rel="noreferrer" className="text-slate-500 transition hover:text-cyan-200">
-                    <Code2 size={20} />
-                  </a>
-                )}
-                {project.liveLink && (
-                  <a href={project.liveLink} target="_blank" rel="noreferrer" className="text-slate-500 transition hover:text-orange-200">
-                    <ExternalLink size={20} />
-                  </a>
-                )}
+              <div className="space-y-5 p-6">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-2xl font-black text-white">{project.title}</h3>
+                    <p className="mt-2 text-sm leading-7 text-slate-300/80">
+                      {project.shortDescription || project.description}
+                    </p>
+                  </div>
+                  {project.role ? (
+                    <span className="rounded-full border border-orange-300/14 bg-orange-400/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.24em] text-orange-100">
+                      {project.role}
+                    </span>
+                  ) : null}
+                </div>
+
+                {project.technologies?.length ? (
+                  <div className="flex flex-wrap gap-2">
+                    {project.technologies.slice(0, 6).map((tech) => (
+                      <span
+                        key={`${project._id}-${tech}`}
+                        className="rounded-full border border-cyan-300/10 bg-cyan-400/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-50"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="rounded-[24px] border border-white/8 bg-white/5 p-4">
+                    <p className="text-[11px] font-mono uppercase tracking-[0.28em] text-cyan-100/45">
+                      Outcome
+                    </p>
+                    <p className="mt-3 text-sm leading-7 text-slate-300/80">
+                      {project.learnings ||
+                        project.shortDescription ||
+                        'A polished implementation focused on usability, clarity, and practical engineering tradeoffs.'}
+                    </p>
+                  </div>
+                  <div className="rounded-[24px] border border-white/8 bg-white/5 p-4">
+                    <p className="text-[11px] font-mono uppercase tracking-[0.28em] text-orange-100/45">
+                      Role
+                    </p>
+                    <p className="mt-3 text-sm leading-7 text-slate-300/80">
+                      {project.role ||
+                        'End-to-end delivery across interface, interaction, and implementation details.'}
+                    </p>
+                  </div>
+                </div>
+
+                {highlights.length ? (
+                  <div className="space-y-3">
+                    {highlights.map((item) => (
+                      <div
+                        key={item}
+                        className="rounded-2xl border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] px-4 py-3 text-sm leading-6 text-slate-200"
+                      >
+                        {item}
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+
+                <div className="flex flex-wrap gap-3">
+                  {project.githubLink ? (
+                    <a
+                      href={project.githubLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full border border-cyan-300/14 bg-cyan-400/10 px-4 py-2 text-sm font-semibold text-cyan-100 transition hover:bg-cyan-400/15"
+                    >
+                      <Code2 size={16} />
+                      Source
+                    </a>
+                  ) : null}
+                  {project.liveLink ? (
+                    <a
+                      href={project.liveLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full border border-orange-300/14 bg-orange-400/10 px-4 py-2 text-sm font-semibold text-orange-100 transition hover:bg-orange-400/15"
+                    >
+                      <ExternalLink size={16} />
+                      Live Demo
+                    </a>
+                  ) : null}
+                </div>
               </div>
-            </div>
-          </motion.div>
-        ))}
+            </motion.article>
+          );
+        })}
       </motion.div>
     </section>
   );

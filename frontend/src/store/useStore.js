@@ -19,8 +19,14 @@ const getInitialState = () => ({
 const sortByOrder = (items = []) =>
   [...items].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
-const sortByDateDesc = (items = [], key = 'startDate') =>
-  [...items].sort((a, b) => new Date(b?.[key] || 0) - new Date(a?.[key] || 0));
+const sortByOrderThenDate = (items = [], key = 'startDate') =>
+  [...items].sort((a, b) => {
+    const orderDiff = (a?.order ?? 0) - (b?.order ?? 0);
+    if (orderDiff !== 0) {
+      return orderDiff;
+    }
+    return new Date(b?.[key] || 0) - new Date(a?.[key] || 0);
+  });
 
 const groupSkills = (items = []) =>
   items.reduce((acc, skill) => {
@@ -55,10 +61,10 @@ export const useStore = create((set, get) => ({
       featuredProjects: projects.filter((item) => item.featured),
       skills,
       skillsByCategory: groupSkills(skills),
-      experience: sortByDateDesc(payload.experience),
-      education: sortByDateDesc(payload.education),
-      certificates: payload.certificates ?? [],
-      achievements: payload.achievements ?? [],
+      experience: sortByOrderThenDate(payload.experience),
+      education: sortByOrderThenDate(payload.education),
+      certificates: sortByOrderThenDate(payload.certificates, 'issueDate'),
+      achievements: sortByOrderThenDate(payload.achievements, 'date'),
       loading: false,
     });
   },

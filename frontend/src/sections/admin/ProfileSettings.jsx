@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Save } from 'lucide-react';
+import AssetUploadField from '../../components/admin/AssetUploadField';
 import { api } from '../../services/api';
 import { useStore } from '../../store/useStore';
 
@@ -8,48 +9,68 @@ function ProfileForm({ initialProfile, onSaved }) {
     fullName: initialProfile?.fullName || '',
     title: initialProfile?.title || '',
     bio: initialProfile?.bio || '',
+    about: initialProfile?.about || '',
     email: initialProfile?.email || '',
     location: initialProfile?.location || '',
+    availability: initialProfile?.availability || '',
+    profileImage: initialProfile?.profileImage || '',
+    resume: initialProfile?.resume || '',
+    socialLinks: {
+      github: initialProfile?.socialLinks?.github || '',
+      linkedin: initialProfile?.socialLinks?.linkedin || '',
+      website: initialProfile?.socialLinks?.website || '',
+    },
+    seo: {
+      ogImage: initialProfile?.seo?.ogImage || '',
+    },
   });
 
-  const handleSave = async (e) => {
-    e.preventDefault();
+  const handleSave = async (event) => {
+    event.preventDefault();
     await api.upsertProfile(formData);
-    window.alert('Profile Core Synchronized');
     onSaved();
   };
 
+  const updateSocial = (key, value) => {
+    setFormData({
+      ...formData,
+      socialLinks: {
+        ...formData.socialLinks,
+        [key]: value,
+      },
+    });
+  };
+
   return (
-    <form onSubmit={handleSave} className="space-y-6 rounded-3xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-md transition-all duration-300 hover:scale-[1.01] hover:border-slate-700 hover:bg-slate-800/50 hover:shadow-2xl hover:shadow-blue-500/10">
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <label className="text-[10px] font-mono uppercase text-slate-500">Full Name</label>
-          <input className="w-full rounded-xl border border-slate-800 bg-slate-950 p-3 outline-none" value={formData.fullName} onChange={e => setFormData({ ...formData, fullName: e.target.value })} />
+    <form onSubmit={handleSave} className="space-y-6 rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(7,14,28,0.92),rgba(9,17,31,0.78))] p-6 shadow-[0_24px_70px_rgba(2,6,23,0.3)] backdrop-blur-2xl">
+      <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+        <div className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2">
+            <input className="rounded-[22px] border border-white/10 bg-slate-950/85 p-4 outline-none" placeholder="Full name" value={formData.fullName} onChange={(e) => setFormData({ ...formData, fullName: e.target.value })} />
+            <input className="rounded-[22px] border border-white/10 bg-slate-950/85 p-4 outline-none" placeholder="Title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
+            <input className="rounded-[22px] border border-white/10 bg-slate-950/85 p-4 outline-none" placeholder="Email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
+            <input className="rounded-[22px] border border-white/10 bg-slate-950/85 p-4 outline-none" placeholder="Location" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} />
+            <input className="rounded-[22px] border border-white/10 bg-slate-950/85 p-4 outline-none md:col-span-2" placeholder="Availability" value={formData.availability} onChange={(e) => setFormData({ ...formData, availability: e.target.value })} />
+            <textarea className="rounded-[22px] border border-white/10 bg-slate-950/85 p-4 outline-none md:col-span-2" rows={3} placeholder="Bio / introduction" value={formData.bio} onChange={(e) => setFormData({ ...formData, bio: e.target.value })} />
+            <textarea className="rounded-[22px] border border-white/10 bg-slate-950/85 p-4 outline-none md:col-span-2" rows={5} placeholder="About section content" value={formData.about} onChange={(e) => setFormData({ ...formData, about: e.target.value })} />
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <input className="rounded-[22px] border border-white/10 bg-slate-950/85 p-4 outline-none" placeholder="GitHub URL" value={formData.socialLinks.github} onChange={(e) => updateSocial('github', e.target.value)} />
+            <input className="rounded-[22px] border border-white/10 bg-slate-950/85 p-4 outline-none" placeholder="LinkedIn URL" value={formData.socialLinks.linkedin} onChange={(e) => updateSocial('linkedin', e.target.value)} />
+            <input className="rounded-[22px] border border-white/10 bg-slate-950/85 p-4 outline-none md:col-span-2" placeholder="Website URL" value={formData.socialLinks.website} onChange={(e) => updateSocial('website', e.target.value)} />
+            <input className="rounded-[22px] border border-white/10 bg-slate-950/85 p-4 outline-none md:col-span-2" placeholder="Resume URL" value={formData.resume} onChange={(e) => setFormData({ ...formData, resume: e.target.value })} />
+          </div>
         </div>
-        <div className="space-y-2">
-          <label className="text-[10px] font-mono uppercase text-slate-500">Title</label>
-          <input className="w-full rounded-xl border border-slate-800 bg-slate-950 p-3 outline-none" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} />
+
+        <div className="space-y-5">
+          <AssetUploadField label="Profile image" value={formData.profileImage} onChange={(value) => setFormData({ ...formData, profileImage: value })} hint="Used for your hero and identity previews." />
+          <AssetUploadField label="OG / share image" value={formData.seo.ogImage} onChange={(value) => setFormData({ ...formData, seo: { ...formData.seo, ogImage: value } })} hint="Used when the portfolio is shared." />
         </div>
       </div>
 
-      <div className="space-y-2">
-        <label className="text-[10px] font-mono uppercase text-slate-500">Bio / Introduction</label>
-        <textarea className="w-full rounded-xl border border-slate-800 bg-slate-950 p-3 outline-none" rows={3} value={formData.bio} onChange={e => setFormData({ ...formData, bio: e.target.value })} />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <label className="text-[10px] font-mono uppercase text-slate-500">Email</label>
-          <input className="w-full rounded-xl border border-slate-800 bg-slate-950 p-3 outline-none" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
-        </div>
-        <div className="space-y-2">
-          <label className="text-[10px] font-mono uppercase text-slate-500">Location</label>
-          <input className="w-full rounded-xl border border-slate-800 bg-slate-950 p-3 outline-none" value={formData.location} onChange={e => setFormData({ ...formData, location: e.target.value })} />
-        </div>
-      </div>
-
-      <button type="submit" className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-4 font-bold shadow-xl shadow-blue-900/20 transition hover:bg-blue-500">
-        <Save size={20} /> PUSH_UPDATES_TO_LIVE
+      <button type="submit" className="flex w-full items-center justify-center gap-2 rounded-[24px] bg-[linear-gradient(135deg,#06b6d4,#2563eb)] py-4 font-bold text-white shadow-[0_18px_45px_rgba(37,99,235,0.25)] transition hover:brightness-110">
+        <Save size={20} /> Save Profile Updates
       </button>
     </form>
   );
@@ -60,9 +81,15 @@ export default function ProfileSettings() {
   const fetchAllData = useStore((state) => state.fetchAllData);
 
   return (
-    <div className="max-w-3xl">
-      <h1 className="mb-8 text-3xl font-bold text-white">CORE_IDENTITY_CONFIG</h1>
+    <section className="space-y-6">
+      <div className="max-w-3xl">
+        <p className="text-xs font-mono uppercase tracking-[0.35em] text-slate-500">Admin section</p>
+        <h1 className="mt-2 text-3xl font-bold text-white">Profile Settings</h1>
+        <p className="mt-3 text-sm leading-7 text-slate-400">
+          Update your identity, social links, and core portfolio assets from one cleaner command surface.
+        </p>
+      </div>
       <ProfileForm key={profile?._id || 'profile-form'} initialProfile={profile} onSaved={fetchAllData} />
-    </div>
+    </section>
   );
 }

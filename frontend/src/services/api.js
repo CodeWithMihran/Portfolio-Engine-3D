@@ -27,6 +27,14 @@ http.interceptors.response.use(
 );
 
 export const api = {
+  uploadImage: (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    return http.post('/upload/image', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+
   getProfile: () => http.get('/profile'),
   upsertProfile: (data) => http.put('/profile', data),
 
