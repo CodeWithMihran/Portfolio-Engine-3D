@@ -95,7 +95,15 @@ export const createProject = async (req, res) => {
       project,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    // --- ADD THESE TWO LINES BELOW ---
+    console.error("FULL CRASH LOG:", error); 
+    if (error.errors) console.error("VALIDATION DETAILS:", error.errors);
+    // ---------------------------------
+
+    res.status(500).json({ 
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined 
+    });
   }
 };
 
@@ -165,12 +173,3 @@ export const toggleFeaturedProject = async (req, res) => {
   }
 };
 
-export const createProject = async (req, res) => {
-  try {
-    const project = await Project.create(req.body);
-    res.status(201).json(project);
-  } catch (error) {
-    console.error("VALIDATION ERROR:", error.errors); // Check Render logs for this!
-    res.status(500).json({ message: error.message });
-  }
-};
