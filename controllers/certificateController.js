@@ -53,6 +53,9 @@ export const getCertificateById = async (req, res) => {
 // ➕ CREATE CERTIFICATE (Admin Only)
 export const createCertificate = async (req, res) => {
   try {
+    // Log what the frontend is actually sending
+    console.log("Certificate Payload:", req.body);
+
     const certificate = await Certificate.create(req.body);
 
     res.status(201).json({
@@ -60,7 +63,16 @@ export const createCertificate = async (req, res) => {
       certificate,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    // Print the EXACT error to Render Logs
+    console.error("CERTIFICATE ERROR:", error.message);
+    if (error.errors) {
+      console.error("FIELD ERRORS:", Object.keys(error.errors));
+    }
+
+    res.status(500).json({ 
+      message: error.message,
+      details: error.errors // This sends the specific missing field back to the browser
+    });
   }
 };
 
