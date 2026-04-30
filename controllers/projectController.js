@@ -164,3 +164,13 @@ export const toggleFeaturedProject = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const createProject = async (req, res) => {
+  try {
+    const project = await Project.create(req.body);
+    res.status(201).json(project);
+  } catch (error) {
+    console.error("VALIDATION ERROR:", error.errors); // Check Render logs for this!
+    res.status(500).json({ message: error.message });
+  }
+};
