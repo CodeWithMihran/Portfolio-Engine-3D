@@ -88,7 +88,8 @@ const projectSchema = new mongoose.Schema(
 );
 
 // 🚀 Performance: Indexing title and tags for fast searching in the 3D scene
-projectSchema.index({ title: 'text', tags: 1 });
+projectSchema.index({ title: 'text' }); 
+projectSchema.index({ tags: 1 });
 
 const Project = mongoose.model("Project", projectSchema);
 
