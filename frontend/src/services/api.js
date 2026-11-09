@@ -1,9 +1,22 @@
 import axios from 'axios';
 
+const configuredApiUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || '/api';
+const apiBaseUrl = /^https?:\/\//i.test(configuredApiUrl) && !configuredApiUrl.replace(/\/$/, '').endsWith('/api')
+  ? `${configuredApiUrl.replace(/\/$/, '')}/api`
+  : configuredApiUrl;
+
 const http = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
-  timeout: 15000,
+  baseURL: apiBaseUrl,
+  timeout: 25000,
 });
+
+const uploadAsset = (file) => {
+  const formData = new FormData();
+  formData.append('image', file);
+  return http.post('/upload/image', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+};
 
 http.interceptors.request.use((config) => {
   const token = localStorage.getItem('adminToken');
@@ -27,13 +40,10 @@ http.interceptors.response.use(
 );
 
 export const api = {
-  uploadImage: (file) => {
-    const formData = new FormData();
-    formData.append('image', file);
-    return http.post('/upload/image', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-  },
+  getHealth: () => http.get('/health', { timeout: 8000 }),
+  getPortfolio: () => http.get('/portfolio'),
+  uploadAsset,
+  uploadImage: uploadAsset,
 
   getProfile: () => http.get('/profile'),
   upsertProfile: (data) => http.put('/profile', data),

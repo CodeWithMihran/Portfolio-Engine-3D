@@ -1,5 +1,7 @@
 import { useId, useState } from 'react';
 import { ImagePlus, Link2, LoaderCircle, Upload, X } from 'lucide-react';
+import SafeImage from '../SafeImage';
+import { createLogoFallback } from '../../lib/media';
 import { api } from '../../services/api';
 
 export default function AssetUploadField({
@@ -26,7 +28,7 @@ export default function AssetUploadField({
     setUploading(true);
 
     try {
-      const response = await api.uploadImage(file);
+      const response = await api.uploadAsset(file);
       onChange(response.data.imageUrl);
     } catch (uploadError) {
       setError(uploadError?.response?.data?.message || 'Upload failed. Please try again.');
@@ -58,8 +60,9 @@ export default function AssetUploadField({
         <div className="grid gap-0 lg:grid-cols-[0.94fr_1.06fr]">
           <div className="flex min-h-[180px] items-center justify-center border-b border-white/8 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.12),transparent_32%),linear-gradient(180deg,rgba(15,23,42,0.86),rgba(2,6,23,0.86))] p-4 lg:min-h-[200px] lg:border-b-0 lg:border-r">
             {previewVisible ? (
-              <img
+              <SafeImage
                 src={value}
+                fallbackSrc={createLogoFallback(label)}
                 alt={label}
                 className="max-h-40 w-full rounded-[20px] border border-white/10 object-cover shadow-[0_14px_35px_rgba(2,6,23,0.28)] lg:max-h-48"
               />

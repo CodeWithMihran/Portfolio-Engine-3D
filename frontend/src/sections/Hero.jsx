@@ -1,5 +1,5 @@
-import { Suspense, lazy, useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
+import { motion, useInView, useReducedMotion } from 'framer-motion';
 import {
   ArrowRight,
   BriefcaseBusiness,
@@ -11,7 +11,8 @@ import {
   MapPin,
 } from 'lucide-react';
 import EmptyStatePanel from '../components/EmptyStatePanel';
-import { createProjectImageFallback, resolveMediaUrl } from '../lib/media';
+import SafeImage from '../components/SafeImage';
+import { createMonogramFallback, createProjectImageFallback, resolveMediaUrl } from '../lib/media';
 import { fadeInLeft, fadeInRight, fadeInUp, staggerContainer } from '../lib/motion';
 import { useStore } from '../store/useStore';
 
@@ -23,30 +24,42 @@ const SOCIAL_LABELS = {
 
 const EarthCanvas = lazy(() => import('../components/canvas/Earth'));
 
-const collectHighlights = (project) =>
-  [project?.challenges, project?.learnings]
-    .flatMap((value) =>
-      String(value || '')
-        .split(/\r?\n|[.!?]+/)
-        .map((item) => item.trim())
-        .filter(Boolean)
-    )
-    .filter((item, index, array) => array.indexOf(item) === index)
-    .slice(0, 2);
+function GlobePlaceholder() {
+  return (
+    <div aria-hidden="true" className="flex h-full w-full items-center justify-center rounded-full bg-[radial-gradient(circle_at_center,rgba(190,55,65,0.2),transparent_48%),radial-gradient(circle_at_55%_45%,rgba(251,146,60,0.08),transparent_24%)]">
+      <div className="h-[52%] w-[52%] rounded-full border border-rose-300/15 bg-rose-400/[0.08] blur-[1px]" />
+    </div>
+  );
+}
 
 void motion;
 
 export default function Hero() {
+  const heroRef = useRef(null);
+  const heroInView = useInView(heroRef, { once: false, amount: 0.05 });
+  const reduceMotion = useReducedMotion();
   const profile = useStore((state) => state.profile);
   const featuredProjects = useStore((state) => state.featuredProjects);
   const projects = useStore((state) => state.projects);
-  const [showPlanet, setShowPlanet] = useState(false);
+  const [showGlobe, setShowGlobe] = useState(false);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setShowPlanet(true), 180);
-    return () => window.clearTimeout(timer);
-  }, []);
+    let idleCallbackId;
+    const timer = window.setTimeout(() => {
+      if ('requestIdleCallback' in window) {
+        idleCallbackId = window.requestIdleCallback(() => setShowGlobe(true), { timeout: 1400 });
+      } else {
+        setShowGlobe(true);
+      }
+    }, 500);
 
+    return () => {
+      window.clearTimeout(timer);
+      if (idleCallbackId !== undefined && 'cancelIdleCallback' in window) {
+        window.cancelIdleCallback(idleCallbackId);
+      }
+    };
+  }, []);
   const firstName = profile?.fullName?.split(' ')?.[0] || 'Md';
   const restName = profile?.fullName?.split(' ')?.slice(1).join(' ') || 'Mihran Sohail';
   const socialLinks = Object.entries(profile?.socialLinks || {}).filter(([, value]) => value);
@@ -57,36 +70,57 @@ export default function Hero() {
         createProjectImageFallback(featuredProject.title)
       )
     : '';
-  const featuredHighlights = featuredProject ? collectHighlights(featuredProject) : [];
+  const portraitUrl = resolveMediaUrl(
+    profile?.profileImage,
+    createMonogramFallback(profile?.fullName || 'MM', {
+      subtitle: 'Developer',
+      background: ['#241116', '#6f2630'],
+      accent: '#f5a78d',
+      size: 720,
+    })
+  );
 
   return (
-    <section className="relative mx-auto flex min-h-screen max-w-7xl items-center overflow-hidden px-4 pt-28 pb-16 sm:px-6 sm:pt-32 sm:pb-20">
-      <div className="absolute inset-x-0 top-0 h-[34rem] bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.18),transparent_42%)]" />
+    <section ref={heroRef} className="relative mx-auto flex min-h-screen max-w-7xl items-center overflow-hidden px-4 pt-28 pb-16 sm:px-6 sm:pt-32 sm:pb-20">
+      <div aria-hidden="true" className="pointer-events-none absolute left-[-0.04em] top-[17%] z-0 select-none whitespace-nowrap text-[clamp(5.5rem,17vw,15rem)] font-black uppercase leading-none tracking-[-0.095em] text-transparent [-webkit-text-stroke:1px_rgba(244,63,94,0.17)]">
+        PORTFOLIO
+      </div>
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[34rem] bg-[radial-gradient(circle_at_top,rgba(190,45,55,0.16),transparent_44%)]" />
+      <div aria-hidden="true" className="absolute left-1/2 top-[48%] z-[1] aspect-square w-[min(118vw,900px)] -translate-x-1/2 -translate-y-1/2 opacity-25 mix-blend-screen sm:opacity-35">
+        {showGlobe ? (
+          <Suspense fallback={<GlobePlaceholder />}>
+            <EarthCanvas autoRotate={heroInView && reduceMotion === false} />
+          </Suspense>
+        ) : (
+          <GlobePlaceholder />
+        )}
+      </div>
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[2] bg-[radial-gradient(circle_at_50%_46%,transparent_25%,rgba(8,9,12,0.16)_62%,rgba(8,9,12,0.6)_100%)]" />
       <motion.div
         variants={staggerContainer}
         initial="hidden"
         animate="show"
-        className="grid w-full gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-12"
+        className="relative z-10 grid w-full items-center gap-10 lg:grid-cols-[1.08fr_0.82fr] lg:gap-14"
       >
         <motion.div variants={fadeInLeft} className="relative flex gap-5">
           <div className="mt-2 hidden flex-col items-center sm:flex">
-            <div className="h-5 w-5 rounded-full bg-violet-300 shadow-[0_0_35px_rgba(196,181,253,0.75)]" />
-            <div className="mt-2 h-72 w-[3px] rounded-full bg-gradient-to-b from-violet-300 via-sky-400 to-emerald-300" />
+            <div className="h-5 w-5 rounded-full bg-rose-300 shadow-[0_0_35px_rgba(251,113,133,0.5)]" />
+            <div className="mt-2 h-72 w-[2px] rounded-full bg-gradient-to-b from-rose-300 via-red-500/70 to-transparent" />
           </div>
 
           <div className="space-y-6 sm:space-y-8">
-            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-400/10 px-4 py-2 text-xs font-mono uppercase tracking-[0.3em] text-cyan-100 shadow-[0_0_35px_rgba(34,211,238,0.08)]">
-              <span className="h-2 w-2 rounded-full bg-orange-300" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-rose-300/20 bg-rose-400/10 px-4 py-2 text-xs font-mono uppercase tracking-[0.3em] text-rose-100 shadow-[0_0_35px_rgba(244,63,94,0.08)]">
+              <span className="h-2 w-2 rounded-full bg-rose-300" />
               {profile?.availability || 'Open to opportunities'}
             </div>
 
             <div className="space-y-5">
-              <p className="text-sm font-mono uppercase tracking-[0.35em] text-cyan-200/55">
-                Portfolio Presentation
+              <p className="text-sm font-mono uppercase tracking-[0.35em] text-rose-200/65">
+                Independent developer · Portfolio
               </p>
               <h1 className="max-w-4xl text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl xl:text-7xl">
                 Hi, I&apos;m{' '}
-                <span className="bg-gradient-to-r from-cyan-200 via-sky-300 to-orange-200 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-rose-200 via-red-300 to-orange-200 bg-clip-text text-transparent">
                   {firstName}
                 </span>
                 <br />
@@ -104,14 +138,14 @@ export default function Hero() {
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
               <a
                 href="#projects"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[linear-gradient(135deg,#06b6d4,#0ea5e9)] px-6 py-3 font-semibold text-white shadow-[0_18px_45px_rgba(14,165,233,0.28)] transition hover:brightness-110 sm:w-auto"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[linear-gradient(135deg,#e5484d,#a92335)] px-6 py-3 font-semibold text-white shadow-[0_18px_45px_rgba(165,35,53,0.28)] transition hover:brightness-110 sm:w-auto"
               >
                 View Projects
                 <ArrowRight size={18} />
               </a>
               <a
                 href="#contact"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-6 py-3 font-semibold text-slate-100 transition hover:border-cyan-300/20 hover:bg-white/10 sm:w-auto"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-6 py-3 font-semibold text-slate-100 transition hover:border-rose-300/25 hover:bg-white/[0.08] sm:w-auto"
               >
                 Let&apos;s Talk
                 <Mail size={18} />
@@ -119,7 +153,7 @@ export default function Hero() {
               {profile?.resume ? (
                 <a
                   href="#resume"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-orange-300/20 bg-orange-400/10 px-6 py-3 font-semibold text-orange-100 transition hover:bg-orange-400/15 sm:w-auto"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-rose-300/20 bg-rose-400/10 px-6 py-3 font-semibold text-rose-100 transition hover:bg-rose-400/15 sm:w-auto"
                 >
                   Resume
                   <Download size={18} />
@@ -153,7 +187,7 @@ export default function Hero() {
                       href={value}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:border-cyan-300/30 hover:bg-cyan-400/10"
+                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-slate-200 transition hover:border-rose-300/30 hover:bg-rose-400/10"
                     >
                       <Icon size={16} />
                       {config.label}
@@ -166,79 +200,25 @@ export default function Hero() {
             {featuredProject ? (
               <motion.article
                 variants={fadeInUp}
-                className="overflow-hidden rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(9,17,31,0.95),rgba(9,17,31,0.82))] shadow-[0_24px_65px_rgba(2,6,23,0.28)] backdrop-blur-xl"
+                className="portfolio-panel p-4 sm:p-5"
               >
-                <div className="grid gap-0 md:grid-cols-[0.4fr_0.6fr]">
-                  <div className="relative min-h-[200px] overflow-hidden">
-                    <img src={featuredImage} alt={featuredProject.title} className="h-full w-full object-cover" />
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,17,31,0.1),rgba(7,17,31,0.78))]" />
-                    <div className="absolute left-4 top-4 rounded-full border border-white/10 bg-slate-950/55 px-3 py-2 text-[10px] font-mono uppercase tracking-[0.28em] text-cyan-100">
-                      Current Focus
-                    </div>
+                <div className="grid items-center gap-4 sm:grid-cols-[104px_minmax(0,1fr)] sm:gap-5">
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-xl sm:aspect-square">
+                    <SafeImage src={featuredImage} fallbackSrc={createProjectImageFallback(featuredProject.title)} alt={`${featuredProject.title} project preview`} loading="lazy" decoding="async" className="h-full w-full object-cover" />
+                    <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-[#100a0c]/45 to-transparent" />
                   </div>
 
-                  <div className="space-y-4 p-5">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="rounded-full border border-cyan-300/16 bg-cyan-400/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.24em] text-cyan-100">
-                        {featuredProject.status || 'completed'}
-                      </span>
-                      {featuredProject.role ? (
-                        <span className="rounded-full border border-orange-300/16 bg-orange-400/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.24em] text-orange-100">
-                          {featuredProject.role}
-                        </span>
-                      ) : null}
-                    </div>
-
-                    <div>
-                      <h3 className="text-2xl font-black text-white">{featuredProject.title}</h3>
-                      <p className="mt-2 text-sm leading-7 text-slate-300/80">
-                        {featuredProject.shortDescription || featuredProject.description}
-                      </p>
-                    </div>
-
-                    {featuredProject.technologies?.length ? (
-                      <div className="flex flex-wrap gap-2">
-                        {featuredProject.technologies.slice(0, 4).map((tech) => (
-                          <span
-                            key={`${featuredProject._id}-${tech}`}
-                            className="rounded-full border border-cyan-300/10 bg-cyan-400/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-50"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-                    ) : null}
-
-                    {featuredHighlights.length ? (
-                      <div className="space-y-2">
-                        {featuredHighlights.map((item) => (
-                          <div
-                            key={item}
-                            className="rounded-2xl border border-white/8 bg-white/5 px-4 py-3 text-sm leading-6 text-slate-200"
-                          >
-                            {item}
-                          </div>
-                        ))}
-                      </div>
-                    ) : null}
-
-                    <div className="flex flex-wrap gap-3">
-                      <a
-                        href="#projects"
-                        className="inline-flex items-center gap-2 rounded-full border border-cyan-300/14 bg-cyan-400/10 px-4 py-2 text-sm font-semibold text-cyan-100 transition hover:bg-cyan-400/15"
-                      >
-                        Explore Project
-                        <ArrowRight size={16} />
+                  <div className="min-w-0">
+                    <p className="text-[9px] font-mono uppercase tracking-[0.28em] text-rose-200/65">{featuredProject.featured ? 'Featured project' : 'Selected work'}<span className="px-2 text-rose-100/25">/</span>{(featuredProject.status || 'completed').replace('-', ' ')}</p>
+                    <h3 className="mt-2 text-xl font-bold tracking-tight text-white sm:text-2xl">{featuredProject.title}</h3>
+                    <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-300/75">{featuredProject.shortDescription || featuredProject.description}</p>
+                    <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+                      <a href="#projects" className="inline-flex items-center gap-2 text-xs font-semibold text-rose-100 transition hover:text-white">
+                        Explore case study <ArrowRight size={14} />
                       </a>
                       {featuredProject.liveLink ? (
-                        <a
-                          href={featuredProject.liveLink}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-2 rounded-full border border-orange-300/14 bg-orange-400/10 px-4 py-2 text-sm font-semibold text-orange-100 transition hover:bg-orange-400/15"
-                        >
-                          Live Preview
-                          <ExternalLink size={16} />
+                        <a href={featuredProject.liveLink} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-xs font-semibold text-orange-100/80 transition hover:text-orange-100">
+                          Live preview <ExternalLink size={13} />
                         </a>
                       ) : null}
                     </div>
@@ -259,30 +239,21 @@ export default function Hero() {
           </div>
         </motion.div>
 
-        <motion.div variants={fadeInRight} className="relative">
-          <div className="pointer-events-none absolute left-14 top-16 hidden h-44 w-44 rounded-full bg-cyan-400/20 blur-[120px] lg:block" />
-          <div className="pointer-events-none absolute right-8 top-10 hidden h-56 w-56 rounded-full bg-orange-400/10 blur-[140px] lg:block" />
-          <div className="pointer-events-none absolute bottom-16 left-1/2 hidden h-48 w-48 -translate-x-1/2 rounded-full bg-sky-400/14 blur-[125px] lg:block" />
-
-          <div className="relative mx-auto flex h-[340px] w-full max-w-[620px] items-center justify-center sm:h-[420px] lg:h-[560px]">
-            <div className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.04),transparent_42%),radial-gradient(circle_at_center,rgba(56,189,248,0.15),transparent_58%),radial-gradient(circle_at_60%_35%,rgba(251,146,60,0.08),transparent_34%)]" />
-            <div className="pointer-events-none absolute inset-x-20 bottom-20 h-16 rounded-full bg-cyan-400/20 blur-3xl" />
-            <div className="h-[320px] w-[320px] max-w-full sm:h-[420px] sm:w-[420px] lg:h-[540px] lg:w-[540px]">
-              {showPlanet ? (
-                <Suspense
-                  fallback={
-                    <div className="flex h-full w-full items-center justify-center rounded-full bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.18),transparent_48%),radial-gradient(circle_at_55%_45%,rgba(251,146,60,0.1),transparent_24%)]">
-                      <div className="h-40 w-40 rounded-full border border-cyan-300/15 bg-cyan-400/10 blur-[1px] sm:h-56 sm:w-56 lg:h-72 lg:w-72" />
-                    </div>
-                  }
-                >
-                  <EarthCanvas />
-                </Suspense>
-              ) : (
-                <div className="flex h-full w-full items-center justify-center rounded-full bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.18),transparent_48%),radial-gradient(circle_at_55%_45%,rgba(251,146,60,0.1),transparent_24%)]">
-                  <div className="h-40 w-40 rounded-full border border-cyan-300/15 bg-cyan-400/10 blur-[1px] sm:h-56 sm:w-56 lg:h-72 lg:w-72" />
-                </div>
-              )}
+        <motion.div variants={fadeInRight} className="relative mx-auto w-full max-w-[430px] lg:mr-2">
+          <div className="portfolio-panel relative mx-auto aspect-[0.82] w-[min(76vw,360px)] p-2 sm:w-[390px] lg:w-full">
+            <SafeImage
+              src={portraitUrl}
+              fallbackSrc={createMonogramFallback(profile?.fullName || 'MM', { subtitle: 'Developer', background: ['#241116', '#6f2630'], accent: '#f5a78d', size: 720 })}
+              alt={`${profile?.fullName || 'Portfolio owner'} portrait`}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              className="h-full w-full border border-white/10 object-cover object-center"
+            />
+            <div aria-hidden="true" className="absolute inset-2 bg-[linear-gradient(180deg,rgba(8,9,12,0.12)_28%,rgba(8,9,12,0.78)_100%)]" />
+            <div className="absolute inset-x-2 bottom-2 border-t border-white/15 bg-[#080809]/85 p-4 sm:p-5">
+              <p className="portfolio-panel-label">Profile / {profile?.title || 'Developer'}</p>
+              <p className="mt-2 text-xl font-bold tracking-tight text-white sm:text-2xl">{profile?.fullName || 'Md Mihran Sohail'}</p>
             </div>
           </div>
         </motion.div>

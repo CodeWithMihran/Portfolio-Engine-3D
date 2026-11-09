@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
-import { BriefcaseBusiness, Globe2 } from 'lucide-react';
+import { Globe2 } from 'lucide-react';
 import EmptyStatePanel from '../components/EmptyStatePanel';
 import SectionIntro from '../components/SectionIntro';
+import SafeImage from '../components/SafeImage';
 import { createLogoFallback, resolveMediaUrl } from '../lib/media';
 import { fadeInUp, staggerContainer } from '../lib/motion';
 import { useStore } from '../store/useStore';
@@ -31,106 +32,87 @@ export default function Experience() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.1 }}
-          className="relative mx-auto max-w-5xl"
+          className="grid gap-4 md:grid-cols-2 xl:grid-cols-3"
         >
-          <div className="absolute bottom-0 left-[22px] top-0 w-px bg-gradient-to-b from-emerald-300/80 via-sky-300/35 to-orange-300/10 sm:left-1/2 sm:-translate-x-1/2" />
-          <div className="space-y-8">
-            {experience.map((item, index) => {
+            {experience.map((item) => {
               const logo = resolveMediaUrl(
                 item.companyLogo,
                 createLogoFallback(item.companyName || item.role || 'Work', 'emerald')
               );
 
               return (
-                <motion.div key={item._id} variants={fadeInUp} className="relative sm:grid sm:grid-cols-2 sm:gap-10">
-                  <div
-                    className={`relative pl-16 sm:pl-0 ${
-                      index % 2 === 0 ? 'sm:pr-10' : 'sm:col-start-2 sm:pl-10'
-                    }`}
-                  >
-                    <span className="absolute left-0 top-8 h-4 w-4 rounded-full border border-emerald-200/80 bg-[#07111f] shadow-[0_0_20px_rgba(45,212,191,0.35)] sm:left-auto sm:top-10 sm:h-5 sm:w-5" />
-                    <div className="rounded-[30px] border border-emerald-300/12 bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.16),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(251,146,60,0.09),transparent_28%),linear-gradient(180deg,rgba(10,18,32,0.95),rgba(10,18,32,0.82))] p-6 shadow-[0_24px_65px_rgba(2,6,23,0.36)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-emerald-300/22 hover:shadow-[0_30px_80px_rgba(45,212,191,0.1)]">
-                      <div className="mb-5 flex items-center gap-4">
-                        <img
-                          src={logo}
-                          alt={item.companyName || item.role}
-                          className="h-14 w-14 rounded-2xl border border-white/10 object-cover"
-                        />
-                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-emerald-300/20 bg-emerald-400/10 text-emerald-100">
-                          <BriefcaseBusiness size={20} />
-                        </div>
+                <motion.article
+                  key={item._id}
+                  variants={fadeInUp}
+                  className="portfolio-panel group grid gap-4 p-5 sm:grid-cols-[minmax(0,1fr)] sm:p-6"
+                >
+                  <div className="min-w-0">
+                    <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                      <p className="portfolio-panel-label">{item.employmentType || 'Professional experience'}</p>
+                      <p className="text-[9px] font-mono uppercase tracking-[0.16em] text-slate-500">{formatDate(item.startDate)}<span className="px-2 text-rose-200/30">/</span>{item.currentlyWorking ? 'Present' : formatDate(item.endDate)}</p>
+                    </div>
+                    <div className="flex items-start gap-4">
+                      <SafeImage
+                        src={logo}
+                        fallbackSrc={createLogoFallback(item.companyName || item.role || 'Work', 'emerald')}
+                        alt={item.companyName || item.role}
+                        className="h-12 w-12 shrink-0 rounded-full border border-white/10 object-cover sm:h-14 sm:w-14"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-xl font-bold tracking-tight text-white transition-colors group-hover:text-rose-100 sm:text-2xl">{item.role}</h3>
+                        <p className="mt-1 text-sm font-medium text-rose-100/75">{item.companyName}</p>
                       </div>
+                    </div>
 
-                      <div className="flex flex-wrap items-start justify-between gap-4">
-                        <div>
-                          <h3 className="text-xl font-bold text-white">{item.role}</h3>
-                          <p className="mt-1 text-sm text-emerald-200">{item.companyName}</p>
-                        </div>
-                        <p className="text-xs font-mono uppercase tracking-[0.25em] text-emerald-100/45">
-                          {formatDate(item.startDate)} -{' '}
-                          {item.currentlyWorking ? 'Present' : formatDate(item.endDate)}
-                        </p>
-                      </div>
-
-                      <div className="mt-4 flex flex-wrap items-center gap-2">
-                        {item.location ? (
-                          <span className="rounded-full border border-white/8 bg-white/5 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.2em] text-slate-300">
-                            {item.location}
-                          </span>
-                        ) : null}
-                        {item.employmentType ? (
-                          <span className="rounded-full border border-emerald-300/10 bg-emerald-400/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.2em] text-emerald-50">
-                            {item.employmentType}
-                          </span>
-                        ) : null}
+                    <div className="mt-4 flex flex-wrap items-center gap-3">
+                        {item.location ? <span className="text-[10px] font-mono uppercase tracking-[0.16em] text-slate-500">{item.location}</span> : null}
                         {item.companyWebsite ? (
                           <a
                             href={item.companyWebsite}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex items-center gap-2 rounded-full border border-orange-300/14 bg-orange-400/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.2em] text-orange-100 transition hover:bg-orange-400/15"
+                            className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.16em] text-orange-100/75 transition hover:text-orange-100"
                           >
                             <Globe2 size={12} />
                             Website
                           </a>
                         ) : null}
-                      </div>
+                    </div>
 
-                      {item.description ? (
-                        <p className="mt-4 leading-7 text-slate-300/80">{item.description}</p>
-                      ) : null}
+                    {item.description ? (
+                        <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300/80">{item.description}</p>
+                    ) : null}
 
-                      {item.responsibilities?.length ? (
-                        <div className="mt-4 space-y-3">
+                    {item.responsibilities?.length ? (
+                        <ul className="mt-4 grid gap-x-8 gap-y-2 sm:grid-cols-2">
                           {item.responsibilities.slice(0, 2).map((responsibility) => (
-                            <div
+                            <li
                               key={responsibility}
-                              className="rounded-2xl border border-white/8 bg-white/5 px-4 py-3 text-sm leading-6 text-slate-200"
+                              className="flex gap-3 py-1 text-sm leading-6 text-slate-300/85"
                             >
+                              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange-200/75" />
                               {responsibility}
-                            </div>
+                            </li>
                           ))}
-                        </div>
-                      ) : null}
+                        </ul>
+                    ) : null}
 
-                      {item.technologies?.length ? (
+                    {item.technologies?.length ? (
                         <div className="mt-4 flex flex-wrap gap-2">
                           {item.technologies.map((tech) => (
                             <span
                               key={`${item._id}-${tech}`}
-                              className="rounded-full border border-emerald-300/10 bg-emerald-400/10 px-3 py-1 text-xs uppercase tracking-[0.18em] text-emerald-50"
+                              className="border border-white/10 bg-white/[0.03] px-2 py-1 text-[9px] uppercase tracking-[0.16em] text-slate-300"
                             >
                               {tech}
                             </span>
                           ))}
                         </div>
-                      ) : null}
-                    </div>
+                    ) : null}
                   </div>
-                </motion.div>
+                </motion.article>
               );
             })}
-          </div>
         </motion.div>
       ) : (
         <EmptyStatePanel
@@ -139,7 +121,7 @@ export default function Experience() {
           body="Add experience in the admin console to populate this section with company identity, responsibilities, and timeline detail."
           ctaLabel="Add Experience"
           ctaHref="/login"
-          tone="teal"
+          tone="red"
         />
       )}
     </section>

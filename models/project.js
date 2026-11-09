@@ -1,5 +1,13 @@
 import mongoose from "mongoose";
 
+const projectMetricSchema = new mongoose.Schema(
+  {
+    label: { type: String, required: true, trim: true, maxlength: 60 },
+    value: { type: String, required: true, trim: true, maxlength: 60 },
+  },
+  { _id: false }
+);
+
 const projectSchema = new mongoose.Schema(
   {
     // 🏷️ Basic Info
@@ -75,6 +83,16 @@ const projectSchema = new mongoose.Schema(
     role: { type: String },
     challenges: { type: String },
     learnings: { type: String },
+    approach: { type: String, trim: true, maxlength: 2000 },
+    outcome: { type: String, trim: true, maxlength: 2000 },
+    impactPoints: {
+      type: [{ type: String, trim: true, maxlength: 240 }],
+      default: [],
+    },
+    metrics: {
+      type: [projectMetricSchema],
+      default: [],
+    },
     
     // 🔢 UI Management
     order: { 

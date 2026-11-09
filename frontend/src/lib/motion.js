@@ -30,13 +30,12 @@ export const fadeInUp = {
 };
 
 export const sectionReveal = {
-  hidden: { opacity: 0, y: 42, scale: 0.985 },
+  hidden: { opacity: 0, y: 24 },
   show: {
     opacity: 1,
     y: 0,
-    scale: 1,
     transition: {
-      duration: 0.8,
+      duration: 0.68,
       ease: [0.22, 1, 0.36, 1],
     },
   },

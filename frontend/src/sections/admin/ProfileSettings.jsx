@@ -1,8 +1,70 @@
-import { useState } from 'react';
-import { Save } from 'lucide-react';
+import { useId, useState } from 'react';
+import { ExternalLink, FileText, LoaderCircle, Save, Upload } from 'lucide-react';
 import AssetUploadField from '../../components/admin/AssetUploadField';
 import { api } from '../../services/api';
 import { useStore } from '../../store/useStore';
+
+function ResumeUploadField({ value, onChange }) {
+  const inputId = useId();
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+      setError('Choose a PDF file for your resume.');
+      event.target.value = '';
+      return;
+    }
+
+    setError('');
+    setUploading(true);
+    try {
+      const response = await api.uploadAsset(file);
+      onChange(response.data.imageUrl);
+    } catch (uploadError) {
+      setError(uploadError.response?.data?.message || 'Resume upload failed. Please try again.');
+    } finally {
+      setUploading(false);
+      event.target.value = '';
+    }
+  };
+
+  return (
+    <div className="space-y-3 md:col-span-2">
+      <label htmlFor={`${inputId}-url`} className="block text-[10px] font-mono uppercase tracking-[0.24em] text-slate-500">
+        Resume / CV PDF
+      </label>
+      <div className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-slate-950/85 p-3 sm:flex-row">
+        <input
+          id={`${inputId}-url`}
+          type="url"
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          className="min-w-0 flex-1 bg-transparent px-2 py-2 text-sm text-white outline-none placeholder:text-slate-500"
+          placeholder="Paste a direct PDF URL or upload your CV"
+        />
+        <label
+          htmlFor={inputId}
+          className="inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl border border-rose-200/15 bg-rose-400/10 px-4 py-3 text-sm font-semibold text-rose-100 transition hover:bg-rose-400/15"
+        >
+          {uploading ? <LoaderCircle size={16} className="animate-spin" /> : <Upload size={16} />}
+          {uploading ? 'Uploading PDF...' : 'Upload PDF'}
+        </label>
+        <input id={inputId} type="file" accept="application/pdf,.pdf" disabled={uploading} className="hidden" onChange={handleUpload} />
+      </div>
+      <p className="text-xs leading-5 text-slate-500">The uploaded file is saved to your portfolio after you save these profile changes.</p>
+      {value ? (
+        <a href={value} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-xs font-semibold text-rose-200 transition hover:text-white">
+          <FileText size={14} /> Preview current CV <ExternalLink size={12} />
+        </a>
+      ) : null}
+      {error ? <p role="alert" className="rounded-xl border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-100">{error}</p> : null}
+    </div>
+  );
+}
 
 function ProfileForm({ initialProfile, onSaved }) {
   const [formData, setFormData] = useState({
@@ -24,11 +86,24 @@ function ProfileForm({ initialProfile, onSaved }) {
       ogImage: initialProfile?.seo?.ogImage || '',
     },
   });
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
+  const [saved, setSaved] = useState(false);
 
   const handleSave = async (event) => {
     event.preventDefault();
-    await api.upsertProfile(formData);
-    onSaved();
+    setSaving(true);
+    setSaveError('');
+    setSaved(false);
+    try {
+      await api.upsertProfile(formData);
+      await onSaved();
+      setSaved(true);
+    } catch (error) {
+      setSaveError(error.response?.data?.message || 'Could not save profile changes. Please try again.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const updateSocial = (key, value) => {
@@ -59,7 +134,7 @@ function ProfileForm({ initialProfile, onSaved }) {
             <input className="rounded-[22px] border border-white/10 bg-slate-950/85 p-4 outline-none" placeholder="GitHub URL" value={formData.socialLinks.github} onChange={(e) => updateSocial('github', e.target.value)} />
             <input className="rounded-[22px] border border-white/10 bg-slate-950/85 p-4 outline-none" placeholder="LinkedIn URL" value={formData.socialLinks.linkedin} onChange={(e) => updateSocial('linkedin', e.target.value)} />
             <input className="rounded-[22px] border border-white/10 bg-slate-950/85 p-4 outline-none md:col-span-2" placeholder="Website URL" value={formData.socialLinks.website} onChange={(e) => updateSocial('website', e.target.value)} />
-            <input className="rounded-[22px] border border-white/10 bg-slate-950/85 p-4 outline-none md:col-span-2" placeholder="Resume URL" value={formData.resume} onChange={(e) => setFormData({ ...formData, resume: e.target.value })} />
+            <ResumeUploadField value={formData.resume} onChange={(resume) => setFormData({ ...formData, resume })} />
           </div>
         </div>
 
@@ -69,8 +144,10 @@ function ProfileForm({ initialProfile, onSaved }) {
         </div>
       </div>
 
-      <button type="submit" className="flex w-full items-center justify-center gap-2 rounded-[24px] bg-[linear-gradient(135deg,#06b6d4,#2563eb)] py-4 font-bold text-white shadow-[0_18px_45px_rgba(37,99,235,0.25)] transition hover:brightness-110">
-        <Save size={20} /> Save Profile Updates
+      {saveError ? <p role="alert" className="rounded-2xl border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-100">{saveError}</p> : null}
+      {saved ? <p role="status" className="rounded-2xl border border-emerald-300/20 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">Profile updates saved.</p> : null}
+      <button type="submit" disabled={saving} className="flex w-full items-center justify-center gap-2 rounded-[24px] bg-[linear-gradient(135deg,#06b6d4,#2563eb)] py-4 font-bold text-white shadow-[0_18px_45px_rgba(37,99,235,0.25)] transition hover:brightness-110 disabled:cursor-wait disabled:opacity-60">
+        <Save size={20} /> {saving ? 'Saving profile...' : 'Save Profile Updates'}
       </button>
     </form>
   );

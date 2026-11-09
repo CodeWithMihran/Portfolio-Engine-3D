@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Award, Briefcase, Code2, Contact, Download, GraduationCap, Home, Menu, Sparkles, Trophy, X } from 'lucide-react';
 import { clsx } from 'clsx';
@@ -29,11 +29,20 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [active, setActive] = useState('Home');
   const profile = useStore((state) => state.profile);
+  const visibleNavItems = useMemo(() => {
+    const sectionVisibility = profile?.sectionVisibility || {};
+    return NAV_ITEMS.filter((item) => {
+      const sectionId = item.href.slice(1);
+      if (!sectionId) return true;
+      if (sectionId === 'resume') return Boolean(profile?.resume);
+      return sectionVisibility[sectionId] !== false;
+    });
+  }, [profile]);
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 80);
-      const sections = NAV_ITEMS.map((item) => item.href.slice(1)).filter(Boolean);
+      const sections = visibleNavItems.map((item) => item.href.slice(1)).filter(Boolean);
       for (let index = sections.length - 1; index >= 0; index -= 1) {
         const section = document.getElementById(sections[index]);
         if (section && window.scrollY >= section.offsetTop - 160) {
@@ -50,13 +59,22 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll);
     handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [visibleNavItems]);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return undefined;
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setMobileMenuOpen(false);
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [mobileMenuOpen]);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-[1000] px-4 pt-5 sm:px-6">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between">
-        <a href="#" className="hidden items-center gap-3 md:flex">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-violet-400/20 bg-violet-500/10 text-sm font-black tracking-[0.3em] text-violet-200">
+        <a href="#" className="hidden items-center gap-3 xl:flex">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-rose-300/25 bg-rose-500/10 text-sm font-black tracking-[0.3em] text-rose-100">
             MM
           </div>
           <div>
@@ -71,13 +89,13 @@ export default function Navbar() {
           initial={{ y: -40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
         className={cn(
-          'hidden items-center gap-2 rounded-full border px-3 py-2 transition-all duration-500 md:flex',
+          'hidden items-center gap-2 rounded-full border px-3 py-2 transition-all duration-500 xl:flex',
           scrolled
-            ? 'border-white/10 bg-slate-950/75 shadow-[0_22px_50px_rgba(2,6,23,0.4)] backdrop-blur-2xl'
+            ? 'border-white/10 bg-[#0e0b0f]/85 shadow-[0_22px_50px_rgba(0,0,0,0.48)] backdrop-blur-2xl'
             : 'border-transparent bg-transparent'
         )}
       >
-        {NAV_ITEMS.map((item) => (
+        {visibleNavItems.map((item) => (
           <a
             key={item.label}
             href={item.href}
@@ -90,7 +108,7 @@ export default function Navbar() {
             {item.label}
             <span
               className={cn(
-                'absolute bottom-1 left-1/2 h-[2px] -translate-x-1/2 rounded-full bg-violet-300 transition-all',
+                'absolute bottom-1 left-1/2 h-[2px] -translate-x-1/2 rounded-full bg-rose-300 transition-all',
                 active === item.label ? 'w-6' : 'w-0 group-hover:w-4'
               )}
             />
@@ -98,14 +116,18 @@ export default function Navbar() {
         ))}
         </motion.nav>
 
-        <div className="flex w-full items-center justify-between md:hidden">
+        <div className="flex w-full items-center justify-between xl:hidden">
           <div>
             <div className="text-xl font-black tracking-tight text-white">MMS.</div>
             <div className="text-[10px] font-mono uppercase tracking-[0.3em] text-slate-500">Portfolio</div>
           </div>
         <button
+          type="button"
+          aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={mobileMenuOpen}
+          aria-controls="mobile-navigation"
           onClick={() => setMobileMenuOpen((value) => !value)}
-            className="rounded-2xl border border-white/10 bg-slate-950/75 p-3 text-white backdrop-blur-2xl"
+          className="rounded-2xl border border-white/10 bg-slate-950/75 p-3 text-white backdrop-blur-2xl"
         >
           {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -118,9 +140,11 @@ export default function Navbar() {
             initial={{ opacity: 0, y: -14 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -14 }}
-            className="absolute top-24 left-4 right-4 flex flex-col gap-4 rounded-3xl border border-white/10 bg-slate-950/95 p-6 shadow-2xl backdrop-blur-2xl md:hidden"
+            id="mobile-navigation"
+            aria-label="Portfolio sections"
+            className="absolute top-24 left-4 right-4 flex max-h-[calc(100dvh-7rem)] flex-col gap-3 overflow-y-auto rounded-3xl border border-white/10 bg-[#0c0b0e]/95 p-4 shadow-2xl backdrop-blur-2xl xl:hidden sm:p-6"
           >
-            {NAV_ITEMS.map((item) => (
+            {visibleNavItems.map((item) => (
               <a
                 key={item.label}
                 href={item.href}
@@ -128,9 +152,9 @@ export default function Navbar() {
                   setActive(item.label);
                   setMobileMenuOpen(false);
                 }}
-                className="flex items-center gap-4 rounded-2xl border border-white/5 bg-white/5 p-4 text-slate-300 transition-all active:bg-violet-500/20 active:text-white"
+                className="flex items-center gap-4 rounded-2xl border border-white/5 bg-white/5 p-4 text-slate-300 transition-all active:bg-rose-400/15 active:text-white"
               >
-                <item.icon size={20} className="text-violet-300" />
+                <item.icon size={20} className="text-rose-200" />
                 <span className="text-xs font-semibold uppercase tracking-widest">{item.label}</span>
               </a>
             ))}

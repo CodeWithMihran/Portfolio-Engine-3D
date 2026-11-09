@@ -1,16 +1,38 @@
 import mongoose from "mongoose";
 
 const connectDB = async () => {
-  try {
-    const mongoUri =
-      process.env.MONGO_URI || "mongodb://127.0.0.1:27017/portfolio";
+  const mongoUri = process.env.MONGO_URI ||
+    (process.env.NODE_ENV === "production"
+      ? ""
+      : "mongodb://127.0.0.1:27017/portfolio");
 
-    await mongoose.connect(mongoUri);
-    console.log("MongoDB connected");
-  } catch (error) {
-    console.error("MongoDB connection error:", error.message);
-    process.exit(1);
+  if (!mongoUri) {
+    throw new Error("MONGO_URI must be configured in production.");
   }
+
+  const retryDelays = [0, 1500, 4000];
+  let lastError;
+
+  for (const delay of retryDelays) {
+    if (delay) {
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+
+    try {
+      await mongoose.connect(mongoUri, {
+        serverSelectionTimeoutMS: 12000,
+        connectTimeoutMS: 12000,
+        maxPoolSize: 10,
+      });
+      console.log(`MongoDB connected (${mongoose.connection.name})`);
+      return;
+    } catch (error) {
+      lastError = error;
+      console.error("MongoDB connection attempt failed:", error.message);
+    }
+  }
+
+  throw lastError;
 };
 
 export default connectDB;

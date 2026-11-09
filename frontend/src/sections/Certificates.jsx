@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Award, ExternalLink } from 'lucide-react';
 import EmptyStatePanel from '../components/EmptyStatePanel';
 import SectionIntro from '../components/SectionIntro';
+import SafeImage from '../components/SafeImage';
 import { createLogoFallback, createProjectImageFallback, resolveMediaUrl } from '../lib/media';
 import { fadeInUp, staggerContainer } from '../lib/motion';
 import { useStore } from '../store/useStore';
@@ -47,12 +48,13 @@ export default function Certificates() {
               <motion.div
                 key={certificate._id}
                 variants={fadeInUp}
-                className="group overflow-hidden rounded-[30px] border border-amber-300/12 bg-[radial-gradient(circle_at_top_left,rgba(251,191,36,0.18),transparent_26%),radial-gradient(circle_at_bottom_right,rgba(34,211,238,0.12),transparent_24%),linear-gradient(180deg,rgba(10,18,32,0.95),rgba(10,18,32,0.82))] shadow-[0_24px_65px_rgba(2,6,23,0.34)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-amber-300/24 hover:shadow-[0_28px_75px_rgba(251,191,36,0.1)]"
+                className="portfolio-panel group"
               >
                 {cover ? (
-                  <div className="relative h-40 overflow-hidden">
-                    <img
+                  <div className="relative h-40 overflow-hidden border-b border-white/10">
+                    <SafeImage
                       src={cover}
+                      fallbackSrc={createProjectImageFallback(certificate.title)}
                       alt={certificate.title}
                       className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
                     />
@@ -60,25 +62,26 @@ export default function Certificates() {
                   </div>
                 ) : null}
 
-                <div className="space-y-4 p-6">
+                <div className="space-y-4 p-5 sm:p-6">
                   <div className="flex items-start gap-4">
-                    <img
+                    <SafeImage
                       src={logo}
+                      fallbackSrc={createLogoFallback(certificate.issuer || certificate.title || 'Issuer', 'cyan')}
                       alt={certificate.issuer || certificate.title}
-                      className="h-12 w-12 rounded-2xl border border-white/10 object-cover"
+                      className="h-12 w-12 border border-white/10 object-cover"
                     />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-3">
-                        <Award className="text-amber-300" size={20} />
-                        <h3 className="text-lg font-bold uppercase tracking-tight text-white">
+                        <Award className="text-rose-300" size={18} />
+                        <h3 className="text-lg font-bold tracking-tight text-white">
                           {certificate.title}
                         </h3>
                       </div>
-                      <p className="mt-2 text-sm text-amber-100/80">Issued by {certificate.issuer}</p>
+                      <p className="mt-2 text-xs text-slate-400">Issued by {certificate.issuer}</p>
                     </div>
                   </div>
 
-                  <div className="space-y-1 text-[11px] font-mono uppercase tracking-[0.2em] text-amber-100/45">
+                  <div className="space-y-1 border-t border-white/10 pt-3 text-[9px] font-mono uppercase tracking-[0.18em] text-rose-200/65">
                     <p>Issued: {formatDate(certificate.issueDate)}</p>
                     {certificate.expiryDate ? <p>Expires: {formatDate(certificate.expiryDate)}</p> : null}
                   </div>
@@ -92,7 +95,7 @@ export default function Certificates() {
                       href={certificate.credentialURL}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-2 rounded-full border border-amber-300/14 bg-amber-400/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-amber-100 transition hover:bg-amber-400/15"
+                      className="inline-flex items-center gap-2 border border-rose-300/25 bg-rose-400/[0.08] px-3 py-2 text-[9px] font-bold uppercase tracking-[0.18em] text-rose-100 transition hover:bg-rose-400/15"
                     >
                       Verify Credential <ExternalLink size={12} />
                     </a>

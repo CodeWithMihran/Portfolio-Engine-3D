@@ -32,6 +32,7 @@ const upload = multer({
     // 📂 Allowed formats for a 3D Portfolio
     const allowedMimetypes = [
       "image/",         // PNG, JPG, WebP
+      "application/pdf", // Resume documents
       "video/",         // MP4, WebM (for your videoDemo textures)
       "model/gltf-binary", // .glb files (Your 3D models)
       "application/octet-stream" // Often used for .glb/.gltf files

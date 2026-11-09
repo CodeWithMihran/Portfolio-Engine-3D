@@ -43,10 +43,11 @@ export default function About() {
               <motion.div
                 key={category}
                 variants={fadeInUp}
-                className="group rounded-[28px] border border-white/10 bg-slate-900/55 p-[1px] shadow-[0_24px_60px_rgba(2,6,23,0.45)]"
+                className="portfolio-panel group"
               >
-                <div className="flex h-full flex-col rounded-[27px] border border-white/5 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.16),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(251,146,60,0.08),transparent_24%),linear-gradient(180deg,rgba(13,22,38,0.96),rgba(9,17,31,0.82))] p-7 transition duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_22px_50px_rgba(34,211,238,0.08)]">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-cyan-300/20 bg-cyan-400/10 text-cyan-100">
+                <div className="flex h-full flex-col p-5 sm:p-6">
+                  <p className="portfolio-panel-label">Capability / 0{index + 1}</p>
+                  <div className="mt-5 flex h-11 w-11 items-center justify-center border border-rose-300/20 bg-rose-400/[0.08] text-rose-100">
                     <Icon size={24} />
                   </div>
                   <h3 className="mt-6 text-xl font-bold capitalize text-white">{category}</h3>
@@ -57,7 +58,7 @@ export default function About() {
                     {items.slice(0, 4).map((item) => (
                       <span
                         key={item._id}
-                        className="rounded-full border border-cyan-300/10 bg-white/5 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.2em] text-slate-300"
+                        className="border border-white/10 bg-white/[0.03] px-2 py-1 text-[9px] font-medium uppercase tracking-[0.16em] text-slate-300"
                       >
                         {item.name}
                       </span>
@@ -75,7 +76,7 @@ export default function About() {
               body="Add skills in the admin console and this overview area will automatically turn into a cleaner category-based capability snapshot."
               ctaLabel="Add Skills"
               ctaHref="/login"
-              tone="cyan"
+              tone="red"
             />
           </motion.div>
         )}

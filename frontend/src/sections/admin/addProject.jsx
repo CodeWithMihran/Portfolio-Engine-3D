@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ImagePlus, Layers3, Save, Sparkles } from 'lucide-react';
+import { ImagePlus, Layers3, Plus, Save, Sparkles, Trash2 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AssetUploadField from '../../components/admin/AssetUploadField';
 import { api } from '../../services/api';
@@ -17,6 +17,10 @@ const EMPTY_FORM = {
   images: '',
   challenges: '',
   learnings: '',
+  approach: '',
+  outcome: '',
+  impactPoints: '',
+  metrics: [],
   featured: false,
   status: 'completed',
   order: 0,
@@ -24,6 +28,7 @@ const EMPTY_FORM = {
 
 function GalleryField({ value, onChange }) {
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
   const urls = value
     .split('\n')
     .map((item) => item.trim())
@@ -37,10 +42,13 @@ function GalleryField({ value, onChange }) {
     }
 
     setUploading(true);
+    setUploadError('');
     try {
-      const response = await api.uploadImage(file);
+      const response = await api.uploadAsset(file);
       const next = [...urls, response.data.imageUrl].join('\n');
       onChange(next);
+    } catch (error) {
+      setUploadError(error.response?.data?.message || 'Image upload failed. Please try again.');
     } finally {
       setUploading(false);
       event.target.value = '';
@@ -66,6 +74,11 @@ function GalleryField({ value, onChange }) {
         value={value}
         onChange={(event) => onChange(event.target.value)}
       />
+      {uploadError ? (
+        <p role="alert" className="rounded-xl border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-100">
+          {uploadError}
+        </p>
+      ) : null}
       {urls.length ? (
         <div className="grid gap-3 sm:grid-cols-3">
           {urls.slice(0, 6).map((url) => (
@@ -86,9 +99,13 @@ function ProjectEditor({ initialData, isEdit = false, projectId }) {
   const navigate = useNavigate();
   const fetchAllData = useStore((state) => state.fetchAllData);
   const [formData, setFormData] = useState(initialData);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setSaving(true);
+    setSaveError('');
 
     const payload = {
       ...formData,
@@ -106,16 +123,31 @@ function ProjectEditor({ initialData, isEdit = false, projectId }) {
       thumbnail: formData.thumbnail || undefined,
       challenges: formData.challenges || undefined,
       learnings: formData.learnings || undefined,
+      approach: formData.approach.trim() || undefined,
+      outcome: formData.outcome.trim() || undefined,
+      impactPoints: formData.impactPoints
+        .split(/\r?\n/)
+        .map((point) => point.trim())
+        .filter(Boolean),
+      metrics: formData.metrics
+        .map(({ label, value }) => ({ label: label.trim(), value: value.trim() }))
+        .filter((metric) => metric.label && metric.value),
     };
 
-    if (isEdit && projectId) {
-      await api.updateProject(projectId, payload);
-    } else {
-      await api.createProject(payload);
-    }
+    try {
+      if (isEdit && projectId) {
+        await api.updateProject(projectId, payload);
+      } else {
+        await api.createProject(payload);
+      }
 
-    await fetchAllData();
-    navigate('/admin/projects');
+      await fetchAllData();
+      navigate('/admin/projects');
+    } catch (error) {
+      setSaveError(error.response?.data?.message || 'Could not save this project. Please try again.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -296,15 +328,15 @@ function ProjectEditor({ initialData, isEdit = false, projectId }) {
               </div>
               <div>
                 <p className="text-xs font-mono uppercase tracking-[0.26em] text-cyan-100/60">
-                  Challenge
+                  Problem / context
                 </p>
-                <p className="text-sm text-slate-300">What problem was solved?</p>
+                <p className="text-sm text-slate-300">What need or constraint shaped the work?</p>
               </div>
             </div>
             <textarea
               rows={5}
               className="mt-4 w-full rounded-[22px] border border-white/10 bg-slate-950/85 p-4 text-white outline-none transition focus:border-cyan-300/30"
-              placeholder="Main constraint, problem, or product challenge"
+              placeholder="Describe the problem, audience, or key constraint"
               value={formData.challenges}
               onChange={(event) => setFormData({ ...formData, challenges: event.target.value })}
             />
@@ -317,27 +349,146 @@ function ProjectEditor({ initialData, isEdit = false, projectId }) {
               </div>
               <div>
                 <p className="text-xs font-mono uppercase tracking-[0.26em] text-orange-100/60">
-                  Outcome
+                  What you learned
                 </p>
-                <p className="text-sm text-slate-300">What changed or improved?</p>
+                <p className="text-sm text-slate-300">Optional reflection, separate from measured results.</p>
               </div>
             </div>
             <textarea
               rows={5}
               className="mt-4 w-full rounded-[22px] border border-white/10 bg-slate-950/85 p-4 text-white outline-none transition focus:border-orange-300/30"
-              placeholder="Impact, result, or what you learned"
+              placeholder="Technical or product lessons from the project"
               value={formData.learnings}
               onChange={(event) => setFormData({ ...formData, learnings: event.target.value })}
             />
           </div>
         </div>
 
+        <div className="grid gap-5 lg:grid-cols-2">
+          <div className="space-y-2">
+            <label className="text-xs font-mono uppercase tracking-[0.28em] text-slate-500">
+              Approach
+            </label>
+            <textarea
+              rows={5}
+              maxLength={2000}
+              className="w-full rounded-[22px] border border-white/10 bg-slate-950/85 p-4 text-white outline-none transition focus:border-cyan-300/30"
+              placeholder="How did you design and build the solution?"
+              value={formData.approach}
+              onChange={(event) => setFormData({ ...formData, approach: event.target.value })}
+            />
+            <p className="text-xs text-slate-500">Optional. Focus on your decisions and implementation.</p>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs font-mono uppercase tracking-[0.28em] text-slate-500">
+              Outcome
+            </label>
+            <textarea
+              rows={5}
+              maxLength={2000}
+              className="w-full rounded-[22px] border border-white/10 bg-slate-950/85 p-4 text-white outline-none transition focus:border-orange-300/30"
+              placeholder="What was delivered or what changed? Avoid unsupported metrics."
+              value={formData.outcome}
+              onChange={(event) => setFormData({ ...formData, outcome: event.target.value })}
+            />
+            <p className="text-xs text-slate-500">Optional. Kept separate from project reflections.</p>
+          </div>
+        </div>
+
+        <div className="grid gap-5 lg:grid-cols-2">
+          <div className="space-y-3 rounded-[28px] border border-rose-300/10 bg-rose-400/[0.04] p-5">
+            <div>
+              <label className="text-xs font-mono uppercase tracking-[0.28em] text-rose-100/70">
+                Impact points
+              </label>
+              <p className="mt-2 text-sm text-slate-400">Add one concrete contribution or result per line.</p>
+            </div>
+            <textarea
+              rows={5}
+              maxLength={1200}
+              className="w-full rounded-[22px] border border-white/10 bg-slate-950/85 p-4 text-white outline-none transition focus:border-rose-300/30"
+              placeholder={'Built a responsive dashboard for ...\nReduced manual steps by ... (only if measured)'}
+              value={formData.impactPoints}
+              onChange={(event) => setFormData({ ...formData, impactPoints: event.target.value })}
+            />
+          </div>
+
+          <div className="space-y-3 rounded-[28px] border border-orange-300/10 bg-orange-400/[0.04] p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-mono uppercase tracking-[0.28em] text-orange-100/70">Verified metrics</p>
+                <p className="mt-2 text-sm text-slate-400">Only add values you can substantiate.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, metrics: [...formData.metrics, { label: '', value: '' }] })}
+                className="inline-flex items-center gap-2 rounded-full border border-orange-300/20 bg-orange-400/10 px-3 py-2 text-xs font-semibold text-orange-100 transition hover:bg-orange-400/15"
+              >
+                <Plus size={14} /> Add metric
+              </button>
+            </div>
+            {formData.metrics.length ? (
+              <div className="space-y-3">
+                {formData.metrics.map((metric, index) => (
+                  <div key={`metric-${index}`} className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+                    <input
+                      type="text"
+                      maxLength={60}
+                      aria-label={`Metric ${index + 1} label`}
+                      className="min-w-0 rounded-xl border border-white/10 bg-slate-950/85 px-4 py-3 text-sm text-white outline-none transition focus:border-orange-300/30"
+                      placeholder="Label (e.g. Load time)"
+                      value={metric.label}
+                      onChange={(event) => {
+                        const metrics = [...formData.metrics];
+                        metrics[index] = { ...metrics[index], label: event.target.value };
+                        setFormData({ ...formData, metrics });
+                      }}
+                    />
+                    <input
+                      type="text"
+                      maxLength={60}
+                      aria-label={`Metric ${index + 1} value`}
+                      className="min-w-0 rounded-xl border border-white/10 bg-slate-950/85 px-4 py-3 text-sm text-white outline-none transition focus:border-orange-300/30"
+                      placeholder="Value (e.g. 1.2 s)"
+                      value={metric.value}
+                      onChange={(event) => {
+                        const metrics = [...formData.metrics];
+                        metrics[index] = { ...metrics[index], value: event.target.value };
+                        setFormData({ ...formData, metrics });
+                      }}
+                    />
+                    <button
+                      type="button"
+                      aria-label={`Remove metric ${index + 1}`}
+                      onClick={() => setFormData({ ...formData, metrics: formData.metrics.filter((_, metricIndex) => metricIndex !== index) })}
+                      className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 text-slate-400 transition hover:border-rose-300/30 hover:text-rose-200"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="rounded-xl border border-dashed border-white/10 px-4 py-5 text-center text-sm text-slate-500">
+                No metrics added. Impact points can tell the story without numbers.
+              </p>
+            )}
+          </div>
+        </div>
+
+        {saveError ? (
+          <p role="alert" className="rounded-2xl border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-100">
+            {saveError}
+          </p>
+        ) : null}
         <button
           type="submit"
-          className="inline-flex w-full items-center justify-center gap-3 rounded-[24px] bg-[linear-gradient(135deg,#06b6d4,#2563eb)] px-6 py-4 font-semibold text-white shadow-[0_18px_45px_rgba(37,99,235,0.25)] transition hover:brightness-110"
+          disabled={saving}
+          className="inline-flex w-full items-center justify-center gap-3 rounded-[24px] bg-[linear-gradient(135deg,#e5484d,#a92335)] px-6 py-4 font-semibold text-white shadow-[0_18px_45px_rgba(165,35,53,0.22)] transition hover:brightness-110 disabled:cursor-wait disabled:opacity-60"
         >
           <Save size={18} />
-          {isEdit ? 'Save Project Updates' : 'Create Project'}
+          {saving ? 'Saving project...' : isEdit ? 'Save Project Updates' : 'Create Project'}
         </button>
       </form>
     </section>
@@ -363,6 +514,10 @@ export default function AddProject({ isEdit = false }) {
       images: existingProject?.images?.join('\n') || '',
       challenges: existingProject?.challenges || '',
       learnings: existingProject?.learnings || '',
+      approach: existingProject?.approach || '',
+      outcome: existingProject?.outcome || '',
+      impactPoints: existingProject?.impactPoints?.join('\n') || '',
+      metrics: existingProject?.metrics?.map(({ label, value }) => ({ label, value })) || [],
       featured: Boolean(existingProject?.featured),
       status: existingProject?.status || 'completed',
       order: existingProject?.order ?? 0,

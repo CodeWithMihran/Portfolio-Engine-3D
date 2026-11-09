@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .portfolio-panel {
+    @apply relative overflow-hidden border border-white/10 bg-[#080809]/90 transition-colors duration-300;
+  }
+
+  .portfolio-panel:hover {
+    @apply border-rose-300/30 bg-[#0d090b];
+  }
+
+  .portfolio-panel-label {
+    @apply text-[9px] font-mono uppercase tracking-[0.26em] text-rose-300/90;
+  }
+
+  .portfolio-panel-copy {
+    @apply text-sm leading-7 text-slate-400;
+  }
+}

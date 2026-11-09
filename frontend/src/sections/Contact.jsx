@@ -43,10 +43,10 @@ export default function Contact() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
-          className="rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(10,18,32,0.95),rgba(10,18,32,0.78))] p-6 shadow-[0_24px_70px_rgba(2,6,23,0.34)] backdrop-blur-xl sm:rounded-[30px] sm:p-8"
+          className="portfolio-panel p-6 sm:p-8"
         >
-          <p className="text-xs font-mono uppercase tracking-[0.35em] text-cyan-200/55">Communication Hub</p>
-          <h3 className="mt-4 text-3xl font-black text-white">Secure Uplink</h3>
+          <p className="text-xs font-mono uppercase tracking-[0.35em] text-rose-200/65">Get in touch</p>
+          <h3 className="mt-4 text-3xl font-black text-white">Let&apos;s talk.</h3>
           <p className="mt-5 max-w-md text-sm leading-7 text-slate-400 sm:text-base sm:leading-8">
             {profile?.about?.slice(0, 180) ||
               'Open to strong product work, meaningful collaborations, and opportunities where engineering quality and thoughtful UI both matter.'}
@@ -56,14 +56,14 @@ export default function Contact() {
             {profile?.email ? (
               <a
                 href={`mailto:${profile.email}`}
-                className="flex items-center gap-4 rounded-2xl border border-cyan-300/12 bg-white/5 px-4 py-4 text-slate-200 transition hover:bg-white/10 sm:px-5"
+                className="flex items-center gap-4 border border-white/10 bg-black/30 px-4 py-4 text-slate-200 transition hover:border-rose-300/25 hover:bg-white/[0.04] sm:px-5"
               >
                 <Mail className="text-cyan-300" size={18} />
                 <span className="break-all">{profile.email}</span>
               </a>
             ) : null}
             {profile?.location ? (
-              <div className="flex items-center gap-4 rounded-2xl border border-orange-300/12 bg-white/5 px-4 py-4 text-slate-200 sm:px-5">
+              <div className="flex items-center gap-4 border border-white/10 bg-black/30 px-4 py-4 text-slate-200 sm:px-5">
                 <MapPin className="text-orange-200" size={18} />
                 <span>{profile.location}</span>
               </div>
@@ -76,14 +76,14 @@ export default function Contact() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
-          className="rounded-[28px] border border-cyan-300/16 bg-[linear-gradient(180deg,rgba(8,17,31,0.94),rgba(10,18,32,0.74))] p-6 shadow-[0_24px_70px_rgba(2,6,23,0.34)] backdrop-blur-xl transition-all duration-300 hover:border-cyan-300/24 hover:shadow-[0_28px_80px_rgba(34,211,238,0.08)] sm:rounded-[30px] sm:p-8"
+          className="portfolio-panel p-6 sm:p-8"
         >
           {!sent ? (
             <>
               <h3 className="text-3xl font-black text-white">
                 Message{' '}
-                <span className="bg-gradient-to-r from-cyan-200 via-sky-300 to-orange-200 bg-clip-text text-transparent">
-                  Terminal
+                <span className="bg-gradient-to-r from-rose-200 via-red-300 to-orange-200 bg-clip-text text-transparent">
+                  anytime
                 </span>
               </h3>
               <p className="mb-8 mt-4 text-sm leading-7 text-slate-400 sm:mb-10 sm:text-base">
@@ -96,7 +96,7 @@ export default function Contact() {
                     type="text"
                     placeholder="Name"
                     required
-                    className="rounded-xl border border-slate-800 bg-slate-950/90 px-4 py-3 text-white outline-none transition-all focus:border-cyan-400"
+                    className="border border-white/10 bg-[#0b0b0f] px-4 py-3 text-white outline-none transition-all focus:border-rose-400"
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                   />
@@ -104,7 +104,7 @@ export default function Contact() {
                     type="email"
                     placeholder="Email"
                     required
-                    className="rounded-xl border border-slate-800 bg-slate-950/90 px-4 py-3 text-white outline-none transition-all focus:border-cyan-400"
+                    className="border border-white/10 bg-[#0b0b0f] px-4 py-3 text-white outline-none transition-all focus:border-rose-400"
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
                   />
@@ -112,7 +112,7 @@ export default function Contact() {
                 <input
                   type="text"
                   placeholder="Subject"
-                  className="w-full rounded-xl border border-slate-800 bg-slate-950/90 px-4 py-3 text-white outline-none transition-all focus:border-cyan-400"
+                  className="w-full border border-white/10 bg-[#0b0b0f] px-4 py-3 text-white outline-none transition-all focus:border-rose-400"
                   value={form.subject}
                   onChange={(e) => setForm({ ...form, subject: e.target.value })}
                 />
@@ -120,14 +120,14 @@ export default function Contact() {
                   placeholder="Your Message"
                   rows={5}
                   required
-                  className="w-full rounded-xl border border-slate-800 bg-slate-950/90 px-4 py-3 text-white outline-none transition-all focus:border-cyan-400"
+                  className="w-full border border-white/10 bg-[#0b0b0f] px-4 py-3 text-white outline-none transition-all focus:border-rose-400"
                   value={form.message}
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
                 />
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#06b6d4,#0ea5e9)] py-4 font-bold text-white shadow-[0_18px_45px_rgba(14,165,233,0.25)] transition-all active:scale-95 disabled:opacity-50 hover:brightness-110"
+                  className="flex w-full items-center justify-center gap-2 border border-rose-300/25 bg-rose-500/15 py-4 font-bold text-white transition-all active:scale-[0.99] disabled:opacity-50 hover:bg-rose-500/25"
                 >
                   {loading ? 'TRANSMITTING...' : <>TRANSMIT MESSAGE <Send size={18} /></>}
                 </button>
@@ -135,12 +135,12 @@ export default function Contact() {
             </>
           ) : (
             <div className="py-8 sm:py-12">
-              <CheckCircle2 size={64} className="mx-auto mb-6 text-emerald-500" />
-              <h3 className="mb-2 text-2xl font-bold text-white">Message Transmitted</h3>
+              <CheckCircle2 size={64} className="mx-auto mb-6 text-rose-300" />
+              <h3 className="mb-2 text-2xl font-bold text-white">Message sent</h3>
               <p className="text-slate-400">I&apos;ll get back to you shortly.</p>
               <button
                 onClick={() => setSent(false)}
-                className="mt-8 text-xs uppercase tracking-widest text-cyan-300 underline"
+                className="mt-8 text-xs uppercase tracking-widest text-rose-200 underline"
               >
                 Send another message
               </button>

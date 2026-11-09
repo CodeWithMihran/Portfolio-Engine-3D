@@ -3,6 +3,7 @@ import { ArrowUpRight, Pencil, Star, Trash2 } from 'lucide-react';
 import OrderControls from '../../components/admin/OrderControls';
 import { moveOrderedItem } from '../../lib/admin';
 import { createProjectImageFallback, resolveMediaUrl } from '../../lib/media';
+import PortfolioReadiness from './PortfolioReadiness';
 import { api } from '../../services/api';
 import { useStore } from '../../store/useStore';
 
@@ -51,6 +52,8 @@ export default function ProjectManagement() {
           Add Project
         </Link>
       </div>
+
+      <PortfolioReadiness />
 
       <div className="grid gap-5">
         {projects.length ? (

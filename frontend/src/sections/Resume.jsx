@@ -20,6 +20,12 @@ const calculateExperienceYears = (experience = []) => {
   return `${years}+`;
 };
 
+const getResumeDownloadUrl = (url) => {
+  if (!url?.includes('res.cloudinary.com') || !url.includes('/image/upload/')) return url;
+  if (url.includes('/fl_attachment/')) return url;
+  return url.replace('/image/upload/', '/image/upload/fl_attachment/');
+};
+
 export default function Resume() {
   const profile = useStore((state) => state.profile);
   const experience = useStore((state) => state.experience);
@@ -32,6 +38,7 @@ export default function Resume() {
 
   const topStack = skills.slice(0, 4).map((item) => item.name);
   const focusAreas = Object.keys(skillsByCategory).slice(0, 3);
+  const resumeDownloadUrl = getResumeDownloadUrl(profile.resume);
 
   return (
     <section id="resume" className="mx-auto max-w-7xl scroll-mt-24 px-4 py-20 sm:px-6 sm:py-24">
@@ -48,20 +55,20 @@ export default function Resume() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.16 }}
-          className="rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,rgba(7,14,28,0.92),rgba(9,17,31,0.78))] p-5 shadow-[0_24px_70px_rgba(2,6,23,0.3)] backdrop-blur-xl sm:p-6"
+          className="portfolio-panel p-4 sm:p-5"
         >
-          <div className="rounded-[26px] border border-white/10 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.12),transparent_32%),linear-gradient(180deg,rgba(15,23,42,0.86),rgba(2,6,23,0.86))] p-4 sm:p-5">
+          <div className="border border-white/10 bg-black/40 p-4 sm:p-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-cyan-300/18 bg-cyan-400/10 text-cyan-100">
+              <div className="flex h-12 w-12 items-center justify-center border border-rose-300/20 bg-rose-400/[0.08] text-rose-100">
                 <FileText size={20} />
               </div>
               <div>
-                <p className="text-xs font-mono uppercase tracking-[0.28em] text-cyan-100/60">Resume preview</p>
+                <p className="text-xs font-mono uppercase tracking-[0.28em] text-rose-100/65">Resume preview</p>
                 <p className="text-sm text-slate-300">Portable profile snapshot</p>
               </div>
             </div>
 
-            <div className="mt-5 overflow-hidden rounded-[22px] border border-white/10 bg-slate-950/85">
+            <div className="mt-5 overflow-hidden border border-white/10 bg-slate-950/85">
               <iframe
                 title="Resume Preview"
                 src={profile.resume}
@@ -76,13 +83,13 @@ export default function Resume() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.16 }}
-          className="space-y-5 rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,rgba(7,14,28,0.92),rgba(9,17,31,0.78))] p-6 shadow-[0_24px_70px_rgba(2,6,23,0.3)] backdrop-blur-xl"
+          className="portfolio-panel space-y-5 p-5 sm:p-6"
         >
           <div>
-            <p className="text-xs font-mono uppercase tracking-[0.32em] text-orange-100/60">Download experience</p>
+            <p className="text-xs font-mono uppercase tracking-[0.32em] text-rose-100/65">Download experience</p>
             <h3 className="mt-3 text-3xl font-black text-white sm:text-4xl">
               Resume built for{' '}
-              <span className="bg-gradient-to-r from-cyan-200 via-sky-300 to-orange-200 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-rose-200 via-red-300 to-orange-200 bg-clip-text text-transparent">
                 quick review
               </span>
             </h3>
@@ -92,24 +99,24 @@ export default function Resume() {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3">
-            <div className="rounded-[24px] border border-cyan-300/12 bg-cyan-400/10 p-4">
-              <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-cyan-100/70">Experience</p>
+            <div className="border border-white/10 bg-black/30 p-4">
+              <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-rose-100/70">Experience</p>
               <p className="mt-3 text-2xl font-black text-white">{calculateExperienceYears(experience)}</p>
               <p className="mt-2 text-sm text-slate-300">Years of active building</p>
             </div>
-            <div className="rounded-[24px] border border-orange-300/12 bg-orange-400/10 p-4">
+            <div className="border border-white/10 bg-black/30 p-4">
               <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-orange-100/70">Top stack</p>
               <p className="mt-3 text-xl font-black text-white">{topStack[0] || 'MERN'}</p>
               <p className="mt-2 text-sm text-slate-300">{topStack.slice(1).join(' · ') || 'Frontend · Backend · UI'}</p>
             </div>
-            <div className="rounded-[24px] border border-emerald-300/12 bg-emerald-400/10 p-4">
-              <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-emerald-100/70">Focus</p>
+            <div className="border border-white/10 bg-black/30 p-4">
+              <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-rose-100/70">Focus</p>
               <p className="mt-3 text-xl font-black text-white">{focusAreas[0] || 'Product UI'}</p>
               <p className="mt-2 text-sm text-slate-300">{focusAreas.slice(1).join(' · ') || 'Systems · Delivery'}</p>
             </div>
           </div>
 
-          <div className="rounded-[26px] border border-white/10 bg-white/5 p-5">
+          <div className="border-t border-white/10 pt-5">
             <div className="flex items-center gap-3">
               <Sparkles size={18} className="text-cyan-300" />
               <p className="text-sm font-semibold text-white">What the resume emphasizes</p>
@@ -118,7 +125,7 @@ export default function Resume() {
               {[...topStack, ...focusAreas].filter(Boolean).slice(0, 6).map((item) => (
                 <span
                   key={item}
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[10px] font-mono uppercase tracking-[0.2em] text-slate-300"
+                  className="border border-white/10 bg-white/[0.03] px-2.5 py-1.5 text-[9px] font-mono uppercase tracking-[0.18em] text-slate-300"
                 >
                   {item}
                 </span>
@@ -128,10 +135,10 @@ export default function Resume() {
 
           <div className="flex flex-col gap-3 sm:flex-row">
             <a
-              href={profile.resume}
+              href={resumeDownloadUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-[22px] bg-[linear-gradient(135deg,#06b6d4,#2563eb)] px-5 py-4 font-semibold text-white shadow-[0_18px_45px_rgba(37,99,235,0.25)] transition hover:brightness-110"
+              className="inline-flex flex-1 items-center justify-center gap-2 border border-rose-300/25 bg-rose-500/15 px-5 py-4 font-semibold text-white transition hover:bg-rose-500/25"
             >
               <Download size={18} />
               Download Resume
@@ -140,7 +147,7 @@ export default function Resume() {
               href={profile.resume}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-[22px] border border-white/10 bg-white/5 px-5 py-4 font-semibold text-slate-100 transition hover:bg-white/10"
+              className="inline-flex flex-1 items-center justify-center gap-2 border border-white/10 bg-white/[0.03] px-5 py-4 font-semibold text-slate-100 transition hover:bg-white/[0.07]"
             >
               <FileText size={18} />
               Open Full View

@@ -1,63 +1,81 @@
-import { Suspense } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { Float, OrbitControls, Preload, useTexture } from '@react-three/drei';
-import CanvasLoader from './Loader';
+import { Suspense, useState } from 'react';
+import { Canvas, useThree } from '@react-three/fiber';
+import { Html, useTexture } from '@react-three/drei';
+import * as THREE from 'three';
+import useDragRotation from './useDragRotation';
 
-function Ball({
-  imgUrl,
-  baseColor = '#fff8eb',
-  emissiveColor = '#0f172a',
-  ambientColor = '#ffffff',
-  directionalColor = '#ffffff',
-}) {
-  const [decal] = useTexture([imgUrl]);
+function SkillOrb({ skill, index, columns, color }) {
+  const texture = useTexture(skill.icon);
+  const row = Math.floor(index / columns);
+  const column = index % columns;
+  const itemsInRow = Math.min(columns, skill.total - row * columns);
+  const x = (column - (itemsInRow - 1) / 2) * 2.15;
+  const y = -row * 2.2;
 
   return (
-    <Float speed={1.75} rotationIntensity={1} floatIntensity={2}>
-      <ambientLight intensity={0.78} color={ambientColor} />
-      <directionalLight intensity={1.25} position={[0, 0, 1]} color={directionalColor} />
-      <pointLight intensity={1.05} position={[-1.6, 1.8, 2.4]} color="#ffffff" />
-      <mesh castShadow receiveShadow scale={2.75}>
-        <icosahedronGeometry args={[1, 1]} />
-        <meshStandardMaterial
-          color={baseColor}
-          emissive={emissiveColor}
-          emissiveIntensity={0.28}
-          metalness={0.22}
-          roughness={0.36}
-          flatShading
-          polygonOffset
-          polygonOffsetFactor={-5}
-        />
+    <group position={[x, y, 0]}>
+      <mesh>
+        <icosahedronGeometry args={[0.72, 2]} />
+        <meshStandardMaterial color={color} metalness={0.42} roughness={0.29} />
       </mesh>
-      <mesh position={[0, 0, 2.86]} scale={1.15}>
-        <circleGeometry args={[0.6, 48]} />
-        <meshBasicMaterial map={decal} transparent toneMapped={false} />
+      <mesh position={[0, 0, 0.74]}>
+        <circleGeometry args={[0.34, 40]} />
+        <meshBasicMaterial map={texture} transparent toneMapped={false} side={THREE.DoubleSide} />
       </mesh>
-    </Float>
+      <Html position={[0, -1.12, 0]} center transform={false}>
+        <div className="pointer-events-none min-w-24 text-center">
+          <p className="whitespace-nowrap text-xs font-semibold text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] sm:text-sm">{skill.name}</p>
+          <p className="mt-1 whitespace-nowrap text-[9px] font-mono uppercase tracking-[0.2em] text-slate-400">{skill.category}</p>
+        </div>
+      </Html>
+    </group>
   );
 }
 
-export default function BallCanvas({
-  icon,
-  baseColor,
-  emissiveColor,
-  ambientColor,
-  directionalColor,
-}) {
+function OrbField({ skills }) {
+  const canvasWidth = useThree((state) => state.size.width);
+  const { rotationRef, dragHandlers } = useDragRotation({ sensitivity: 0.006, verticalLimit: 0.6 });
+  const columns = canvasWidth < 640 ? 3 : canvasWidth < 1024 ? 4 : 6;
+  const rows = Math.ceil(skills.length / columns);
+  const colors = ['#d08b4b', '#4c9a9a', '#6587bd', '#b8776d', '#8d9b68', '#9b7db7'];
+
   return (
-    <Canvas frameloop="demand" dpr={[1, 2]} gl={{ preserveDrawingBuffer: true }}>
-      <Suspense fallback={<CanvasLoader />}>
-        <OrbitControls enableZoom={false} />
-        <Ball
-          imgUrl={icon}
-          baseColor={baseColor}
-          emissiveColor={emissiveColor}
-          ambientColor={ambientColor}
-          directionalColor={directionalColor}
-        />
+    <group ref={rotationRef} {...dragHandlers}>
+      <ambientLight intensity={1.65} />
+      <directionalLight position={[3, 5, 8]} intensity={2.4} color="#fff1d6" />
+      <pointLight position={[-4, 2, 3]} intensity={18} color="#4ec6c2" />
+      <group position={[0, (rows - 1) * 1.1, 0]}>
+        {skills.map((skill, index) => (
+          <SkillOrb
+            key={skill._id || skill.name}
+            skill={{ ...skill, total: skills.length }}
+            index={index}
+            columns={columns}
+            color={colors[index % colors.length]}
+          />
+        ))}
+      </group>
+    </group>
+  );
+}
+
+export default function BallCanvas({ skills, height }) {
+  const [compactQuality] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia?.('(max-width: 767px), (pointer: coarse)').matches
+  );
+
+  return (
+    <Canvas
+      frameloop="demand"
+      dpr={compactQuality ? 1 : [1, 1.25]}
+      orthographic
+      camera={{ position: [0, 0, 18], zoom: compactQuality ? 58 : 68 }}
+      gl={{ alpha: true, antialias: !compactQuality, powerPreference: 'low-power' }}
+      style={{ height, touchAction: 'pan-y' }}
+    >
+      <Suspense fallback={null}>
+        <OrbField skills={skills} />
       </Suspense>
-      <Preload all />
     </Canvas>
   );
 }

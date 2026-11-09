@@ -12,6 +12,7 @@ const getInitialState = () => ({
   certificates: [],
   achievements: [],
   loading: true,
+  loadError: null,
   token: localStorage.getItem('adminToken') || null,
   isAdmin: Boolean(localStorage.getItem('adminToken')),
 });
@@ -37,6 +38,8 @@ const groupSkills = (items = []) =>
     acc[category].push(skill);
     return acc;
   }, {});
+
+let portfolioRequest;
 
 export const useStore = create((set, get) => ({
   ...getInitialState(),
@@ -66,39 +69,28 @@ export const useStore = create((set, get) => ({
       certificates: sortByOrderThenDate(payload.certificates, 'issueDate'),
       achievements: sortByOrderThenDate(payload.achievements, 'date'),
       loading: false,
+      loadError: null,
     });
   },
 
-  init: async () => {
-    set({ loading: true });
-
-    try {
-      const results = await Promise.allSettled([
-        api.getProfile(),
-        api.getProjects(),
-        api.getSkills(),
-        api.getExperience(),
-        api.getEducation(),
-        api.getCertificates(),
-        api.getAchievements(),
-      ]);
-
-      const [profile, projects, skills, experience, education, certificates, achievements] =
-        results.map((result) => (result.status === 'fulfilled' ? result.value.data : null));
-
-      get().hydrateData({
-        profile,
-        projects: projects ?? [],
-        skills: skills ?? [],
-        experience: experience ?? [],
-        education: education ?? [],
-        certificates: certificates ?? [],
-        achievements: achievements ?? [],
-      });
-    } catch (error) {
-      console.error('Failed to initialize frontend store:', error);
-      set({ loading: false });
+  init: () => {
+    if (portfolioRequest) {
+      return portfolioRequest;
     }
+
+    set({ loading: true, loadError: null });
+
+    portfolioRequest = api.getPortfolio()
+      .then(({ data }) => get().hydrateData(data))
+      .catch((error) => {
+        console.error('Failed to initialize frontend store:', error);
+        set({ loading: false, loadError: error.message || 'Portfolio data is temporarily unavailable.' });
+      })
+      .finally(() => {
+        portfolioRequest = null;
+      });
+
+    return portfolioRequest;
   },
 
   fetchAllData: async () => {

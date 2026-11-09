@@ -31,16 +31,19 @@ export default function Achievements() {
             <motion.div
               key={achievement._id}
               variants={fadeInUp}
-              className="group rounded-[30px] border border-orange-300/12 bg-[radial-gradient(circle_at_top_left,rgba(251,146,60,0.16),transparent_26%),radial-gradient(circle_at_bottom_right,rgba(244,114,182,0.1),transparent_24%),linear-gradient(180deg,rgba(12,18,32,0.95),rgba(12,18,32,0.82))] p-6 shadow-[0_24px_65px_rgba(2,6,23,0.34)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-orange-300/24 hover:shadow-[0_28px_75px_rgba(251,146,60,0.1)]"
+              className="portfolio-panel group p-5 sm:p-6"
             >
-              <Trophy className="mb-4 text-orange-300 transition-transform group-hover:scale-110" size={32} />
-              <h3 className="mb-2 text-lg font-bold uppercase tracking-tight text-white">{achievement.title}</h3>
-              <p className="mb-3 text-sm text-orange-100/80">{achievement.issuer || achievement.type}</p>
+              <div className="mb-5 flex items-center justify-between gap-3">
+                <p className="portfolio-panel-label">{achievement.type || 'Recognition'}</p>
+                <Trophy className="text-rose-300 transition-transform group-hover:scale-110" size={19} />
+              </div>
+              <h3 className="mb-2 text-lg font-bold tracking-tight text-white">{achievement.title}</h3>
+              <p className="mb-3 text-sm text-slate-400">{achievement.issuer || achievement.type}</p>
               {achievement.description ? (
                 <p className="text-sm leading-7 text-slate-300/80">{achievement.description}</p>
               ) : null}
               {achievement.position ? (
-                <p className="mt-4 inline-flex rounded-full border border-fuchsia-300/16 bg-fuchsia-400/10 px-3 py-1 text-xs font-mono uppercase tracking-[0.22em] text-fuchsia-100">
+                <p className="mt-4 inline-flex border border-rose-300/25 bg-rose-400/[0.08] px-3 py-1.5 text-[9px] font-mono uppercase tracking-[0.2em] text-rose-100">
                   {achievement.position}
                 </p>
               ) : null}
@@ -49,7 +52,7 @@ export default function Achievements() {
                   href={achievement.certificateURL}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-5 inline-flex items-center gap-2 rounded-full border border-orange-300/14 bg-orange-400/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-orange-100 transition hover:bg-orange-400/15"
+                  className="mt-5 inline-flex items-center gap-2 border border-white/10 px-3 py-2 text-[9px] font-bold uppercase tracking-[0.18em] text-rose-100 transition hover:border-rose-300/25 hover:bg-rose-400/[0.08]"
                 >
                   View Proof <ExternalLink size={12} />
                 </a>
@@ -63,7 +66,7 @@ export default function Achievements() {
             body="Add awards, competitions, and recognitions in the admin console to complete this section with proof links and stronger visual identity."
             ctaLabel="Add Achievements"
             ctaHref="/login"
-            tone="orange"
+            tone="red"
           />
         )}
       </motion.div>

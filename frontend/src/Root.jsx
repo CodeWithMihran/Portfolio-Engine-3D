@@ -1,19 +1,24 @@
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import App from './App';
-import AdminLayout from './components/admin/adminLayout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
-import AddProject from './sections/admin/addProject';
-import AchievementManagement from './sections/admin/AchievementManagement';
-import CertificateManagement from './sections/admin/CertificateManagement';
-import JourneyManagement from './sections/admin/JourneyManagement';
-import Messages from './sections/admin/Messages';
-import ProfileSettings from './sections/admin/ProfileSettings';
-import ProjectManagement from './sections/admin/ProjectManagement';
-import SkillManagement from './sections/admin/SkillManagement';
-import Login from './sections/auth/Login';
 import { useStore } from './store/useStore';
+
+const AdminLayout = lazy(() => import('./components/admin/adminLayout'));
+const AddProject = lazy(() => import('./sections/admin/addProject'));
+const AchievementManagement = lazy(() => import('./sections/admin/AchievementManagement'));
+const CertificateManagement = lazy(() => import('./sections/admin/CertificateManagement'));
+const JourneyManagement = lazy(() => import('./sections/admin/JourneyManagement'));
+const Messages = lazy(() => import('./sections/admin/Messages'));
+const ProfileSettings = lazy(() => import('./sections/admin/ProfileSettings'));
+const ProjectManagement = lazy(() => import('./sections/admin/ProjectManagement'));
+const SkillManagement = lazy(() => import('./sections/admin/SkillManagement'));
+const Login = lazy(() => import('./sections/auth/Login'));
+
+function RouteLoading() {
+  return <div className="min-h-screen animate-pulse bg-[#090d12]" />;
+}
 
 export default function Root() {
   const init = useStore((state) => state.init);
@@ -24,11 +29,11 @@ export default function Root() {
 
   useEffect(() => {
     document.documentElement.classList.add('scroll-smooth');
-    document.body.classList.add('bg-[#020617]', 'text-slate-100', 'antialiased', 'overflow-x-hidden');
+    document.body.classList.add('bg-[#08090c]', 'text-slate-100', 'antialiased', 'overflow-x-hidden');
 
     return () => {
       document.documentElement.classList.remove('scroll-smooth');
-      document.body.classList.remove('bg-[#020617]', 'text-slate-100', 'antialiased', 'overflow-x-hidden');
+      document.body.classList.remove('bg-[#08090c]', 'text-slate-100', 'antialiased', 'overflow-x-hidden');
     };
   }, []);
 
@@ -36,13 +41,15 @@ export default function Root() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Suspense fallback={<RouteLoading />}><Login /></Suspense>} />
         <Route
           path="/admin"
           element={
-            <ProtectedRoute>
-              <AdminLayout />
-            </ProtectedRoute>
+            <Suspense fallback={<RouteLoading />}>
+              <ProtectedRoute>
+                <AdminLayout />
+              </ProtectedRoute>
+            </Suspense>
           }
         >
           <Route index element={<Navigate to="/admin/projects" replace />} />

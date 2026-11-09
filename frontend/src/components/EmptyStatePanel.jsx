@@ -9,6 +9,12 @@ export default function EmptyStatePanel({
   tone = 'cyan',
 }) {
   const tones = {
+    red: {
+      border: 'border-rose-300/14',
+      bg: 'bg-[radial-gradient(circle_at_top_left,rgba(145,34,49,0.18),transparent_30%),linear-gradient(155deg,rgba(25,18,21,0.97),rgba(12,13,17,0.95))]',
+      pill: 'border-rose-300/18 bg-rose-400/10 text-rose-100',
+      button: 'border-rose-300/20 bg-rose-400/10 text-rose-100 hover:bg-rose-400/15',
+    },
     cyan: {
       border: 'border-cyan-300/12',
       bg: 'bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.16),transparent_28%),linear-gradient(180deg,rgba(10,18,32,0.94),rgba(10,18,32,0.8))]',
@@ -41,23 +47,23 @@ export default function EmptyStatePanel({
     },
   };
 
-  const style = tones[tone] || tones.cyan;
+  const style = tones[tone] || tones.red;
 
   return (
     <div
-      className={`rounded-[30px] border ${style.border} ${style.bg} p-6 text-center shadow-[0_20px_55px_rgba(2,6,23,0.28)] backdrop-blur-xl sm:p-8`}
+      className={`portfolio-panel border ${style.border} ${style.bg} p-6 text-left shadow-none sm:p-8`}
     >
       <div
-        className={`mx-auto inline-flex rounded-full border px-4 py-2 text-[10px] font-mono uppercase tracking-[0.28em] ${style.pill}`}
+        className={`inline-flex border px-3 py-1.5 text-[9px] font-mono uppercase tracking-[0.24em] ${style.pill}`}
       >
         {eyebrow}
       </div>
       <h3 className="mt-5 text-2xl font-bold text-white">{title}</h3>
-      <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-400">{body}</p>
+      <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-400">{body}</p>
       {ctaLabel ? (
         <Link
           to={ctaHref}
-          className={`mt-6 inline-flex rounded-full border px-5 py-3 text-xs font-mono uppercase tracking-[0.28em] transition ${style.button}`}
+          className={`mt-6 inline-flex border px-4 py-3 text-[10px] font-mono uppercase tracking-[0.22em] transition ${style.button}`}
         >
           {ctaLabel}
         </Link>
